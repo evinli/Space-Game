@@ -2,13 +2,15 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
-public class Sprite {
+public abstract class Sprite {
     private Image image;
     private int x, y;
     private int dx, dy;
 
-    public Sprite(String imageFile) {
+    public Sprite(String imageFile, int x, int y) {
         loadImage(imageFile);
+        this.x = x;
+        this.y = y;
     }
 
     private void loadImage(String imageName) {
