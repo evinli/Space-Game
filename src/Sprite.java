@@ -2,7 +2,7 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
-public class Sprite {
+public abstract class Sprite {
     private Image image;
     private int x, y;
     private int dx, dy;
