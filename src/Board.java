@@ -9,13 +9,12 @@ import javax.swing.Timer;
 
 
 public class Board extends JPanel implements ActionListener, KeyListener {
-    private Sprite spaceShip;
+    private Spaceship spaceShip;
     private Timer timer;
     private boolean gameOver;
 
     public Board() {
-        spaceShip = new Sprite("res/thing_test.png");
-        spaceShip.setX(10);
+        spaceShip = new Spaceship("res/thing_test.png", 0, 0);
         this.addKeyListener(this);
         this.setFocusable(true);
         gameOver = false;
@@ -23,7 +22,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         timer.start();
     }
 
-        private void draw() {};
+        private void draw() {}
 
     @Override
     public void actionPerformed(ActionEvent e) {

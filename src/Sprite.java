@@ -14,14 +14,11 @@ public abstract class Sprite {
     }
 
     private void loadImage(String imageName) {
-
         ImageIcon i = new ImageIcon(imageName);
         image = i.getImage();
     }
 
-    public void move() {}
-
-    private void loadImage() {}
+    public abstract void move();
 
     public Image getImage() {
         return image;

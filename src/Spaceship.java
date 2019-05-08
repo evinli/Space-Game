@@ -1,10 +1,10 @@
 public class Spaceship extends Sprite {
 
-    public Spaceship() {
-        super(x, y);
+    public Spaceship(String imageFile, int x, int y) {
+        super(imageFile, x, y);
     }
 
-    public shoot() {
+    public void shoot() {
 
     }
 
