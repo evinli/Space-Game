@@ -3,7 +3,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.util.List;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -12,20 +12,42 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private Spaceship spaceShip;
     private Timer timer;
     private boolean gameOver;
+    private ArrayList<Bullet> shots;
+    private int width, height;
 
-    public Board() {
-        spaceShip = new Spaceship("res/thing_test.png", 0, 0);
+    public Board(int width, int height) {
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        this.width = width;
+        this.height = height;
         gameOver = false;
+        shots = new ArrayList<>();
+
+        spaceShip = new Spaceship("res/thing_test.png", 0, 0);
         timer = new Timer(10, this);
         timer.start();
+        shoot();
     }
 
-        private void draw() {}
+    public void shoot() {
+        Bullet shot = new Bullet("res/bullet_test.png", spaceShip.getX(), spaceShip.getY());
+        shots.add(shot);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        //move each shot on the board
+        ArrayList<Bullet> outOfBounds = new ArrayList<>();
+        for (Bullet shot : shots) {
+            shot.move();
+            //remove the shot if it moves out of bounds
+            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
+                outOfBounds.add(shot);
+            }
+        }
+        shots.removeAll(outOfBounds);
+
         this.repaint();
     }
 
@@ -37,6 +59,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         g2d.drawImage(spaceShip.getImage(), spaceShip.getX(),
                 spaceShip.getY(), this);
+
+        for (Bullet shot : shots) {
+            g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
+        }
 
         Toolkit.getDefaultToolkit().sync();
     }

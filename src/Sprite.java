@@ -1,16 +1,17 @@
 import java.awt.Image;
-import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
 public abstract class Sprite {
     private Image image;
+    private int width, height;
     private int x, y;
-    private int dx, dy;
+    protected int xVel, yVel;
 
     public Sprite(String imageFile, int x, int y) {
         loadImage(imageFile);
         this.x = x;
         this.y = y;
+
     }
 
     private void loadImage(String imageName) {
@@ -22,6 +23,14 @@ public abstract class Sprite {
 
     public Image getImage() {
         return image;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public int getX() {
