@@ -14,7 +14,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private boolean gameOver;
 
     public Board() {
-        spaceShip = new Spaceship("res/thing_test.png", 0, 0);
+        spaceShip = new Spaceship(0, 0);
         this.addKeyListener(this);
         this.setFocusable(true);
         gameOver = false;
