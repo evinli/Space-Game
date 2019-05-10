@@ -1,8 +1,10 @@
 public class Bullet extends Sprite {
 
-    public Bullet(int x, int y) {
-        super(x,y);
+    public Bullet(String imageFile, int x, int y) {
+        super(imageFile, x, y);
     }
+
+    public void move(){}
 
 
 }
