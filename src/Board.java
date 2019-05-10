@@ -22,8 +22,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         timer.start();
     }
 
-        private void draw() {}
-
     @Override
     public void actionPerformed(ActionEvent e) {
         this.repaint();
@@ -53,7 +51,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 spaceShip.setY(spaceShip.getY() - 5);
                 break;
             case (KeyEvent.VK_RIGHT):
-                System.out.println("Right");
                 spaceShip.setX(spaceShip.getX() + 5);
                 break;
             case (KeyEvent.VK_DOWN):
