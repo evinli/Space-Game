@@ -15,7 +15,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private ArrayList<Bullet> shots;
     private int width, height;
 
+
     public Board(int width, int height) {
+        spaceShip = new Spaceship(0, 0);
+
         this.addKeyListener(this);
         this.setFocusable(true);
 
@@ -24,7 +27,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         gameOver = false;
         shots = new ArrayList<>();
 
-        spaceShip = new Spaceship("res/thing_test.png", 0, 0);
+        spaceShip = new Spaceship(0, 0);
         timer = new Timer(10, this);
         timer.start();
         shoot();
@@ -79,7 +82,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 spaceShip.setY(spaceShip.getY() - 5);
                 break;
             case (KeyEvent.VK_RIGHT):
-                System.out.println("Right");
                 spaceShip.setX(spaceShip.getX() + 5);
                 break;
             case (KeyEvent.VK_DOWN):
