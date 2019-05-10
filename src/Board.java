@@ -14,9 +14,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private boolean gameOver;
     private ArrayList<Bullet> shots;
     private int width, height;
-
+    private boolean[] keys = new boolean[0xE3];
 
     public Board(int width, int height) {
+
         spaceShip = new Spaceship(0, 0);
 
         this.addKeyListener(this);
@@ -52,6 +53,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         shots.removeAll(outOfBounds);
 
         this.repaint();
+
+        if (keys[KeyEvent.VK_RIGHT]) {
+            spaceShip.setX(spaceShip.getX() + 5);
+        }
     }
 
     @Override
@@ -77,24 +82,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case (KeyEvent.VK_UP):
-                spaceShip.setY(spaceShip.getY() - 5);
-                break;
-            case (KeyEvent.VK_RIGHT):
-                spaceShip.setX(spaceShip.getX() + 5);
-                break;
-            case (KeyEvent.VK_DOWN):
-                spaceShip.setY(spaceShip.getY() + 5);
-                break;
-            case (KeyEvent.VK_LEFT):
-                spaceShip.setX(spaceShip.getX() - 5);
-                break;
-        }
+        keys[e.getKeyCode()] = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        keys[e.getKeyCode()] = false;
     }
 }
