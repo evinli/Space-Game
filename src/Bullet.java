@@ -4,5 +4,7 @@ public class Bullet extends Sprite {
         super(imageFile, x, y);
     }
 
+    public void move(){}
+
 
 }

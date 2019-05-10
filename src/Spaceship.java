@@ -8,4 +8,6 @@ public class Spaceship extends Sprite {
 
     }
 
+    public void move(){}
+
 }
