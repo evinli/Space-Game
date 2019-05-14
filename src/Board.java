@@ -16,6 +16,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
+    private final int shipSpeed = 5;
+
     public Board(int width, int height) {
 
         spaceShip = new Spaceship(0, 0);
@@ -54,8 +56,22 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         this.repaint();
 
-        if (keys[KeyEvent.VK_RIGHT]) {
-            spaceShip.setX(spaceShip.getX() + 5);
+        if (keys[KeyEvent.VK_W]) {
+            spaceShip.setY(spaceShip.getY() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_S]) {
+            spaceShip.setY(spaceShip.getY() + shipSpeed);
+        }
+        if (keys[KeyEvent.VK_A]) {
+            spaceShip.setX(spaceShip.getX() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_D]) {
+            spaceShip.setX(spaceShip.getX() + shipSpeed);
+        }
+
+        if (keys[KeyEvent.VK_SPACE]) {
+            Bullet shot = new Bullet("res/bullet_test.png", spaceShip.getX(), spaceShip.getY());
+            shots.add(shot);
         }
     }
 
