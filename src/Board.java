@@ -9,14 +9,15 @@ import javax.swing.Timer;
 
 
 public class Board extends JPanel implements ActionListener, KeyListener {
-    private Spaceship spaceShip;
     private Timer timer;
     private boolean gameOver;
-    private ArrayList<Bullet> shots;
     private int width, height;
+    private final int shipSpeed = 5;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int shipSpeed = 5;
+    private Spaceship spaceShip;
+    private ArrayList<Bullet> shots;
+
 
     public Board(int width, int height) {
 
@@ -70,7 +71,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
 
         if (keys[KeyEvent.VK_SPACE]) {
-            Bullet shot = new Bullet("res/bullet_test.png", spaceShip.getX(), spaceShip.getY());
+            Bullet shot = new Bullet("res/Bullet.png", spaceShip.getX(), spaceShip.getY());
             shots.add(shot);
         }
     }
