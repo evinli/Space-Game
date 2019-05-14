@@ -12,11 +12,15 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private boolean gameOver;
     private int width, height;
-    private final int shipSpeed = 5;
     private boolean[] keys = new boolean[0xE3];
+
+    private final int shipSpeed = 3;
+    private final int maxCooldown = 10;
+    private int cooldown;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
+
 
 
     public Board(int width, int height) {
@@ -34,7 +38,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         spaceShip = new Spaceship(0, 0);
         timer = new Timer(10, this);
         timer.start();
-        shoot();
+        cooldown = 0;
     }
 
     public void shoot() {
@@ -71,8 +75,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
 
         if (keys[KeyEvent.VK_SPACE]) {
-            Bullet shot = new Bullet("res/Bullet.png", spaceShip.getX(), spaceShip.getY());
-            shots.add(shot);
+            if (cooldown <= 0) {
+                cooldown = maxCooldown;
+                shoot();
+            }
+            cooldown -=  1;
         }
     }
 
