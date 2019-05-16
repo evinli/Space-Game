@@ -14,7 +14,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int shipSpeed = 3;
+    private final int screenVel = 5;
+    private final int shipSpeed = 8;
     private final int maxCooldown = 10;
     private int cooldown;
 
@@ -42,23 +43,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     }
 
     public void shoot() {
-        Bullet shot = new Bullet("res/bullet_test.png", spaceShip.getX(), spaceShip.getY());
+        Bullet shot = new Bullet("res/Bullet.png", spaceShip.getX() + spaceShip.getWidth(),
+                spaceShip.getY() + spaceShip.getHeight() / 2);
         shots.add(shot);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //move each shot on the board
-        ArrayList<Bullet> outOfBounds = new ArrayList<>();
-        for (Bullet shot : shots) {
-            shot.move();
-            //remove the shot if it moves out of bounds
-            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
-                outOfBounds.add(shot);
-            }
-        }
-        shots.removeAll(outOfBounds);
-
+        //Movement of the ship
         if (keys[KeyEvent.VK_W]) {
             spaceShip.setY(spaceShip.getY() - shipSpeed);
         }
@@ -72,6 +64,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             spaceShip.setX(spaceShip.getX() + shipSpeed);
         }
 
+        spaceShip.setX(spaceShip.getX() - screenVel);
+
         if (keys[KeyEvent.VK_SPACE]) {
             if (cooldown <= 0) {
                 cooldown = maxCooldown;
@@ -79,7 +73,18 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             }
         }
         cooldown -=  1;
-        
+
+        //move each shot on the board
+        ArrayList<Bullet> outOfBounds = new ArrayList<>();
+        for (Bullet shot : shots) {
+            shot.move();
+            //remove the shot if it moves out of bounds
+            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
+                outOfBounds.add(shot);
+            }
+        }
+        shots.removeAll(outOfBounds);
+
 
         this.repaint();
     }
@@ -89,6 +94,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, width, height);
 
         g2d.drawImage(spaceShip.getImage(), spaceShip.getX(),
                 spaceShip.getY(), this);
