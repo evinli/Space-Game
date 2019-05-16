@@ -92,7 +92,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         g2d.drawImage(spaceShip.getImage(), spaceShip.getX(),
                 spaceShip.getY(), this);
-
+        
         for (Bullet shot : shots) {
             g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
         }
