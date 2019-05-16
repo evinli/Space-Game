@@ -1,4 +1,4 @@
-import java.awt.Image;
+import java.awt.*;
 import javax.swing.ImageIcon;
 
 public abstract class Sprite {
@@ -21,6 +21,10 @@ public abstract class Sprite {
     }
 
     public abstract void move();
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
 
     public Image getImage() {
         return image;
