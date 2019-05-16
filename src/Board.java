@@ -59,8 +59,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
         shots.removeAll(outOfBounds);
 
-        this.repaint();
-
         if (keys[KeyEvent.VK_W]) {
             spaceShip.setY(spaceShip.getY() - shipSpeed);
         }
@@ -79,8 +77,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 cooldown = maxCooldown;
                 shoot();
             }
-            cooldown -=  1;
         }
+        cooldown -=  1;
+        
+
+        this.repaint();
     }
 
     @Override

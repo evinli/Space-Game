@@ -11,7 +11,8 @@ public abstract class Sprite {
         loadImage(imageFile);
         this.x = x;
         this.y = y;
-
+        //width = image.getWidth();
+        //height = image.getHeight();
     }
 
     private void loadImage(String imageName) {
