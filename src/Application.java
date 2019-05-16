@@ -9,7 +9,7 @@ public class Application extends JFrame {
     }
 
     private void initUI() {
-
+        
         add(new Board(1000, 800));
 
         setSize(1000, 800);
