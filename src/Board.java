@@ -1,7 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.JPanel;
@@ -21,13 +18,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
+    private ArrayList<Obstacle> obstacles;
 
 
 
     public Board(int width, int height) {
-
-        spaceShip = new Spaceship(0, 0);
-
         this.addKeyListener(this);
         this.setFocusable(true);
 
@@ -37,9 +32,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         shots = new ArrayList<>();
 
         spaceShip = new Spaceship(0, 0);
+        obstacles = new ArrayList<>();
         timer = new Timer(10, this);
         timer.start();
         cooldown = 0;
+
+        Obstacle testObstacle = new Obstacle("res/thing_test.png", 500, 500);
+        obstacles.add(testObstacle);
     }
 
     public void shoot() {
@@ -85,8 +84,30 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
         shots.removeAll(outOfBounds);
 
+        checkCollisions();
 
         this.repaint();
+    }
+
+    public void checkCollisions() {
+        Rectangle shipHitBox = spaceShip.getBounds();
+        for (Obstacle obstacle : obstacles) {
+            if (shipHitBox.intersects(obstacle.getBounds())) {
+                System.out.println("You died, code something here later");
+            }
+        }
+
+        ArrayList<Obstacle> toDelete = new ArrayList<>();
+        for (Bullet shot : shots) {
+            Rectangle shotHitBox = shot.getBounds();
+
+            for (Obstacle obstacle : obstacles) {
+                if (shotHitBox.intersects(obstacle.getBounds())) {
+                    toDelete.add(obstacle);
+                }
+            }
+        }
+        obstacles.removeAll(toDelete);
     }
 
     @Override
@@ -103,6 +124,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         
         for (Bullet shot : shots) {
             g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
+        }
+
+        for (Obstacle obstacle : obstacles) {
+            g2d.drawImage(obstacle.getImage(), obstacle.getX(), obstacle.getY(), this);
         }
 
         Toolkit.getDefaultToolkit().sync();
