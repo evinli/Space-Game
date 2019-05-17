@@ -19,6 +19,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
     private ArrayList<Obstacle> obstacles;
+    private ScrollingBackground backOne, backTwo;
 
 
 
@@ -33,11 +34,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
+        backOne = new ScrollingBackground(0);
+        backTwo = new ScrollingBackground(backOne.getWidth());
         timer = new Timer(10, this);
         timer.start();
         cooldown = 0;
 
-        Obstacle testObstacle = new Obstacle("res/thing_test.png", 500, 500);
+        Obstacle testObstacle = new Obstacle("res/thing_test.png", 1000, 500);
         obstacles.add(testObstacle);
     }
 
@@ -49,42 +52,45 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //Movement of the ship
-        if (keys[KeyEvent.VK_W]) {
-            spaceShip.setY(spaceShip.getY() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_S]) {
-            spaceShip.setY(spaceShip.getY() + shipSpeed);
-        }
-        if (keys[KeyEvent.VK_A]) {
-            spaceShip.setX(spaceShip.getX() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_D]) {
-            spaceShip.setX(spaceShip.getX() + shipSpeed);
-        }
-
-        spaceShip.setX(spaceShip.getX() - screenVel);
-
-        if (keys[KeyEvent.VK_SPACE]) {
-            if (cooldown <= 0) {
-                cooldown = maxCooldown;
-                shoot();
+        if (!gameOver) {
+            //Movement of the ship
+            if (keys[KeyEvent.VK_W]) {
+                spaceShip.setY(spaceShip.getY() - shipSpeed);
             }
-        }
-        cooldown -=  1;
-
-        //move each shot on the board
-        ArrayList<Bullet> outOfBounds = new ArrayList<>();
-        for (Bullet shot : shots) {
-            shot.move();
-            //remove the shot if it moves out of bounds
-            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
-                outOfBounds.add(shot);
+            if (keys[KeyEvent.VK_S]) {
+                spaceShip.setY(spaceShip.getY() + shipSpeed);
             }
-        }
-        shots.removeAll(outOfBounds);
+            if (keys[KeyEvent.VK_A]) {
+                spaceShip.setX(spaceShip.getX() - shipSpeed);
+            }
+            if (keys[KeyEvent.VK_D]) {
+                spaceShip.setX(spaceShip.getX() + shipSpeed);
+            }
 
-        checkCollisions();
+            //Check if the ship should shoot
+            if (keys[KeyEvent.VK_SPACE]) {
+                if (cooldown <= 0) {
+                    cooldown = maxCooldown;
+                    shoot();
+                }
+            }
+            cooldown -= 1;
+
+            //move each shot on the board
+            ArrayList<Bullet> outOfBounds = new ArrayList<>();
+            for (Bullet shot : shots) {
+                shot.move();
+                //remove the shot if it moves out of bounds
+                if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
+                    outOfBounds.add(shot);
+                }
+            }
+            shots.removeAll(outOfBounds);
+
+            checkCollisions();
+
+            scrollScreen();
+        }
 
         this.repaint();
     }
@@ -93,7 +99,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         Rectangle shipHitBox = spaceShip.getBounds();
         for (Obstacle obstacle : obstacles) {
             if (shipHitBox.intersects(obstacle.getBounds())) {
-                System.out.println("You died, code something here later");
+                gameOver = true;
             }
         }
 
@@ -110,14 +116,34 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         obstacles.removeAll(toDelete);
     }
 
+    //Moves objects on the screen to the left to create scrolling effect
+    public void scrollScreen() {
+        backOne.setX(backOne.getX() - screenVel);
+        if (backOne.getX() <= -1 * backOne.getWidth()) {
+            backOne.setX(backOne.getWidth());
+        }
+        backTwo.setX(backTwo.getX() - screenVel);
+        if (backTwo.getX() <= -1 * backTwo.getWidth()) {
+            backTwo.setX(backOne.getWidth());
+        }
+
+        spaceShip.setX(spaceShip.getX() - screenVel);
+
+        for (Obstacle obstacle : obstacles) {
+            obstacle.setX(obstacle.getX() - screenVel);
+        }
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;
 
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, width, height);
+//        g2d.setColor(Color.BLACK);
+//        g2d.fillRect(0, 0, width, height);
+        g2d.drawImage(backOne.getImage(), backOne.getX(), 0, this);
+        g2d.drawImage(backTwo.getImage(), backTwo.getX(), 0, this);
 
         g2d.drawImage(spaceShip.getImage(), spaceShip.getX(),
                 spaceShip.getY(), this);
@@ -128,6 +154,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         for (Obstacle obstacle : obstacles) {
             g2d.drawImage(obstacle.getImage(), obstacle.getX(), obstacle.getY(), this);
+        }
+
+        if (gameOver) {
+            //placeholder game over
+            System.out.println("Game Over");
         }
 
         Toolkit.getDefaultToolkit().sync();
