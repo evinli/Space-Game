@@ -40,7 +40,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         timer.start();
         cooldown = 0;
 
-        Obstacle testObstacle = new Obstacle("res/thing_test.png", 1000, 500);
+        Obstacle testObstacle = new Obstacle("res/Planet.png", 1000, 500);
         obstacles.add(testObstacle);
     }
 
@@ -88,7 +88,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         for (Bullet shot : shots) {
             shot.move();
             //remove the shot if it moves out of bounds
-            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
+            if (shot.getX() - getScreenOffset() > 1000) {
                 outOfBounds.add(shot);
             }
         }
