@@ -119,7 +119,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
         obstacles.removeAll(toDelete);
     }
-
+    
     private int getScreenOffset() {
         return spaceShip.getX() - 300;
     }
