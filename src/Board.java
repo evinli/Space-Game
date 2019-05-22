@@ -11,8 +11,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int screenVel = 5;
-    private final int shipSpeed = 8;
+    private final int screenVel = 2;
+    private final int shipSpeed = 6;
     private final int maxCooldown = 10;
     private int cooldown;
 
@@ -52,45 +52,49 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!gameOver) {
-            //Movement of the ship
-            if (keys[KeyEvent.VK_W]) {
-                spaceShip.setY(spaceShip.getY() - shipSpeed);
-            }
-            if (keys[KeyEvent.VK_S]) {
-                spaceShip.setY(spaceShip.getY() + shipSpeed);
-            }
-            if (keys[KeyEvent.VK_A]) {
-                spaceShip.setX(spaceShip.getX() - shipSpeed);
-            }
-            if (keys[KeyEvent.VK_D]) {
-                spaceShip.setX(spaceShip.getX() + shipSpeed);
-            }
-
-            //Check if the ship should shoot
-            if (keys[KeyEvent.VK_SPACE]) {
-                if (cooldown <= 0) {
-                    cooldown = maxCooldown;
-                    shoot();
-                }
-            }
-            cooldown -= 1;
-
-            //move each shot on the board
-            ArrayList<Bullet> outOfBounds = new ArrayList<>();
-            for (Bullet shot : shots) {
-                shot.move();
-                //remove the shot if it moves out of bounds
-                if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
-                    outOfBounds.add(shot);
-                }
-            }
-            shots.removeAll(outOfBounds);
-
-            checkCollisions();
-
-            scrollScreen();
+        if (gameOver) {
+            //placeholder game over
+            System.out.println("Game Over");
         }
+
+        spaceShip.setX(spaceShip.getX() + screenVel);
+
+        //Movement of the ship
+        if (keys[KeyEvent.VK_W]) {
+            spaceShip.setY(spaceShip.getY() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_S]) {
+            spaceShip.setY(spaceShip.getY() + shipSpeed);
+        }
+        if (keys[KeyEvent.VK_A]) {
+            spaceShip.setX(spaceShip.getX() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_D]) {
+            spaceShip.setX(spaceShip.getX() + shipSpeed);
+        }
+
+        //Check if the ship should shoot
+        if (keys[KeyEvent.VK_SPACE]) {
+            if (cooldown <= 0) {
+                cooldown = maxCooldown;
+                shoot();
+            }
+        }
+
+        cooldown -= 1;
+
+        //move each shot on the board
+        ArrayList<Bullet> outOfBounds = new ArrayList<>();
+        for (Bullet shot : shots) {
+            shot.move();
+            //remove the shot if it moves out of bounds
+            if (shot.getX() > width || shot.getX() < 0 - shot.getWidth()) {
+                outOfBounds.add(shot);
+            }
+        }
+        shots.removeAll(outOfBounds);
+
+        checkCollisions();
 
         this.repaint();
     }
@@ -116,22 +120,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         obstacles.removeAll(toDelete);
     }
 
-    //Moves objects on the screen to the left to create scrolling effect
-    public void scrollScreen() {
-        backOne.setX(backOne.getX() - screenVel);
-        if (backOne.getX() <= -1 * backOne.getWidth()) {
-            backOne.setX(backOne.getWidth());
-        }
-        backTwo.setX(backTwo.getX() - screenVel);
-        if (backTwo.getX() <= -1 * backTwo.getWidth()) {
-            backTwo.setX(backOne.getWidth());
-        }
-
-        spaceShip.setX(spaceShip.getX() - screenVel);
-
-        for (Obstacle obstacle : obstacles) {
-            obstacle.setX(obstacle.getX() - screenVel);
-        }
+    private int getScreenOffset() {
+        return spaceShip.getX() - 300;
     }
 
     @Override
@@ -140,26 +130,20 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         Graphics2D g2d = (Graphics2D) g;
 
-//        g2d.setColor(Color.BLACK);
-//        g2d.fillRect(0, 0, width, height);
-        g2d.drawImage(backOne.getImage(), backOne.getX(), 0, this);
-        g2d.drawImage(backTwo.getImage(), backTwo.getX(), 0, this);
+        backOne.draw(g2d, this, getScreenOffset());
+        backTwo.draw(g2d, this, getScreenOffset());
 
-        g2d.drawImage(spaceShip.getImage(), spaceShip.getX(),
-                spaceShip.getY(), this);
-        
+        spaceShip.draw(g2d, this, getScreenOffset());
+
         for (Bullet shot : shots) {
-            g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
+            shot.draw(g2d, this, getScreenOffset());
         }
 
-        for (Obstacle obstacle : obstacles) {
-            g2d.drawImage(obstacle.getImage(), obstacle.getX(), obstacle.getY(), this);
+        for (Obstacle o : obstacles) {
+            o.draw(g2d, this, getScreenOffset());
         }
 
-        if (gameOver) {
-            //placeholder game over
-            System.out.println("Game Over");
-        }
+
 
         Toolkit.getDefaultToolkit().sync();
     }

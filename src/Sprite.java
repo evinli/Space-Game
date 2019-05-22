@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 
 public abstract class Sprite {
@@ -21,6 +22,10 @@ public abstract class Sprite {
     }
 
     public abstract void move();
+
+    public void draw(Graphics2D g, ImageObserver observer, int screenOffset) {
+        g.drawImage(image, x - screenOffset, y, observer);
+    }
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
