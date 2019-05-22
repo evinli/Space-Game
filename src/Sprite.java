@@ -5,7 +5,7 @@ public abstract class Sprite {
     private Image image;
     private int width, height;
     protected int x, y;
-    protected int xVel, yVel;
+    protected double xVel, yVel;
 
     public Sprite(String imageFile, int x, int y) {
         loadImage(imageFile);

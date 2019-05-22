@@ -127,8 +127,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             backTwo.setX(backOne.getWidth());
         }
 
-        spaceShip.setX(spaceShip.getX() - screenVel);
-
         for (Obstacle obstacle : obstacles) {
             obstacle.setX(obstacle.getX() - screenVel);
         }
