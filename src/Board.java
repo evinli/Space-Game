@@ -19,7 +19,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
     private ArrayList<Obstacle> obstacles;
-    private ScrollingBackground backOne, backTwo;
+    private Background backOne;
 
 
 
@@ -34,8 +34,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
-        backOne = new ScrollingBackground(0);
-        backTwo = new ScrollingBackground(backOne.getWidth());
+        backOne = new Background(0);
+//        backTwo = new Background(backOne.getWidth());
         timer = new Timer(10, this);
         timer.start();
         cooldown = 0;
@@ -131,7 +131,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         Graphics2D g2d = (Graphics2D) g;
 
         backOne.draw(g2d, this, getScreenOffset());
-        backTwo.draw(g2d, this, getScreenOffset());
+//        backTwo.draw(g2d, this, getScreenOffset());
 
         spaceShip.draw(g2d, this, getScreenOffset());
 
