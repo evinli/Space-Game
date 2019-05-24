@@ -5,6 +5,7 @@ public class Bullet extends Sprite {
     public Bullet(String imageFile, int x, int y) {
         super(imageFile, x, y);
         xVel = bulletSpeed;
+        yVel = 0;
     }
 
     //This constructor is used by enemies to point at the player
@@ -17,11 +18,11 @@ public class Bullet extends Sprite {
         double angle = Math.atan(yDiff/xDiff);
         xVel = bulletSpeed * Math.cos(angle);
         yVel = bulletSpeed * Math.sin(angle);
-        System.out.println(xVel + " " + yVel);
     }
 
     public void move(){
         x += xVel;
+        y += yVel;
     }
 
 

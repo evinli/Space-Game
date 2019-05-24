@@ -44,12 +44,6 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         obstacles.add(testObstacle);
     }
 
-    public void shoot() {
-        Bullet shot = new Bullet("res/Bullet.png", spaceShip.getX() + spaceShip.getWidth(),
-                spaceShip.getY() + spaceShip.getHeight() / 2);
-        shots.add(shot);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (gameOver) {
@@ -77,7 +71,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         if (keys[KeyEvent.VK_SPACE]) {
             if (cooldown <= 0) {
                 cooldown = maxCooldown;
-                shoot();
+                shots.add(spaceShip.shoot());
             }
         }
 
