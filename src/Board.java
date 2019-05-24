@@ -15,10 +15,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private final int shipSpeed = 6;
     private final int maxCooldown = 10;
     private int cooldown;
+    private int counter;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
+    private ArrayList<Bullet> enemyShots;
     private ArrayList<Obstacle> obstacles;
+    private ArrayList<Enemy> enemies;
     private Background backOne;
 
 
@@ -31,17 +34,24 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         this.height = height;
         gameOver = false;
         shots = new ArrayList<>();
+        enemyShots = new ArrayList<>();
 
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
+        enemies = new ArrayList<>();
         backOne = new Background(0);
 //        backTwo = new Background(backOne.getWidth());
         timer = new Timer(10, this);
-        timer.start();
         cooldown = 0;
+        counter = 0;
 
         Obstacle testObstacle = new Obstacle("res/Planet.png", 1000, 500);
         obstacles.add(testObstacle);
+
+        Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
+        enemies.add(testEnemy);
+
+        timer.start();
     }
 
     @Override
@@ -50,6 +60,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             //placeholder game over
             System.out.println("Game Over");
         }
+
+        counter++;
 
         spaceShip.setX(spaceShip.getX() + screenVel);
 
@@ -77,12 +89,25 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         cooldown -= 1;
 
+        if (counter % 20 == 0) {
+            for (Enemy enemy : enemies) {
+                enemy.shoot(spaceShip.getX() - getScreenOffset(), spaceShip.getY() - getScreenOffset());
+            }
+        }
+
         //move each shot on the board
         ArrayList<Bullet> outOfBounds = new ArrayList<>();
         for (Bullet shot : shots) {
             shot.move();
             //remove the shot if it moves out of bounds
-            if (shot.getX() - getScreenOffset() > 1000) {
+            if (shot.getX() - getScreenOffset() > width) {
+                outOfBounds.add(shot);
+            }
+        }
+        for (Bullet shot : enemyShots) {
+            shot.move();
+            //remove the shot if it moves out of bounds
+            if (shot.getX() - getScreenOffset() > width || shot.getX() - getScreenOffset() < 0) {
                 outOfBounds.add(shot);
             }
         }
@@ -133,8 +158,16 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             shot.draw(g2d, this, getScreenOffset());
         }
 
+        for (Bullet shot : enemyShots) {
+            shot.draw(g2d, this, getScreenOffset());
+        }
+
         for (Obstacle o : obstacles) {
             o.draw(g2d, this, getScreenOffset());
+        }
+
+        for (Enemy e : enemies) {
+            e.draw(g2d, this, getScreenOffset());
         }
 
 

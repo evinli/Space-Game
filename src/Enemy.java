@@ -8,5 +8,8 @@ public class Enemy extends Obstacle {
         return new Bullet("res/thing_test.png", x, y, shipX, shipY);
     }
 
-
+    @Override
+    public void move() {
+        super.move();
+    }
 }
