@@ -11,7 +11,7 @@ public class Spaceship extends Sprite {
     }
 
     public Bullet shoot() {
-        return new Bullet("res/Bullet.png", x + width, y + height / 2);
+        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2);
     }
 
 }

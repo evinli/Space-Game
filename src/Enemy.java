@@ -5,7 +5,7 @@ public class Enemy extends Obstacle {
     }
 
     public Bullet shoot(int shipX, int shipY) {
-        return new Bullet("res/thing_test.png", x, y, shipX, shipY);
+        return new Bullet("res/thing_test.png", x, y + getHeight() / 2, shipX, shipY);
     }
 
     @Override

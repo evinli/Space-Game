@@ -50,6 +50,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
         enemies.add(testEnemy);
+        obstacles.add(testEnemy);
 
         timer.start();
     }
@@ -91,7 +92,12 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         if (counter % 20 == 0) {
             for (Enemy enemy : enemies) {
-                enemy.shoot(spaceShip.getX() - getScreenOffset(), spaceShip.getY() - getScreenOffset());
+                //enemies only shoot if they are on the screen and if they are in front of the spaceshipa
+                if (enemy.getX() - getScreenOffset() <= width && enemy.getX() > spaceShip.getX() + spaceShip.getWidth()) {
+                    //shoot a shot aimed at the front tip of the spaceship
+                    enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
+                            spaceShip.getY() + spaceShip.getHeight() / 2));
+                }
             }
         }
 
@@ -104,6 +110,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 outOfBounds.add(shot);
             }
         }
+        shots.removeAll(outOfBounds);
+
+        outOfBounds.clear();
         for (Bullet shot : enemyShots) {
             shot.move();
             //remove the shot if it moves out of bounds
@@ -111,7 +120,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 outOfBounds.add(shot);
             }
         }
-        shots.removeAll(outOfBounds);
+        enemyShots.removeAll(outOfBounds);
 
         checkCollisions();
 
@@ -136,6 +145,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 }
             }
         }
+        enemies.removeAll(toDelete);
         obstacles.removeAll(toDelete);
     }
     
@@ -166,9 +176,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             o.draw(g2d, this, getScreenOffset());
         }
 
-        for (Enemy e : enemies) {
+        /*for (Enemy e : enemies) {
             e.draw(g2d, this, getScreenOffset());
-        }
+        }*/
 
 
 

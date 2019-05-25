@@ -17,7 +17,7 @@ public class Bullet extends Sprite {
         //points at the target by using similar triangles and essentially sets the speed of the hypotenuse to 10
         double angle = Math.atan(yDiff/xDiff);
         xVel = -1 * bulletSpeed * Math.cos(angle);
-        yVel = bulletSpeed * Math.sin(angle);
+        yVel = -1 * bulletSpeed * Math.sin(angle);
     }
 
     public void move(){
