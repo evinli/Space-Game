@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private ArrayList<Bullet> enemyShots;
     private ArrayList<Obstacle> obstacles;
     private ArrayList<Enemy> enemies;
-    private Background backOne;
+    private Background backOne, backTwo;
 
 
 
@@ -40,7 +40,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
         backOne = new Background(0);
-//        backTwo = new Background(backOne.getWidth());
+        backTwo = new Background(-1 * backOne.getWidth());
         timer = new Timer(10, this);
         cooldown = 0;
         counter = 0;
@@ -79,6 +79,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + shipSpeed);
         }
+
+        //update background
+        backOne.update(width, getScreenOffset());
+        backTwo.update(width, getScreenOffset());
 
         //Check if the ship should shoot
         if (keys[KeyEvent.VK_SPACE]) {
@@ -160,7 +164,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         Graphics2D g2d = (Graphics2D) g;
 
         backOne.draw(g2d, this, getScreenOffset());
-//        backTwo.draw(g2d, this, getScreenOffset());
+        backTwo.draw(g2d, this, getScreenOffset());
 
         spaceShip.draw(g2d, this, getScreenOffset());
 
