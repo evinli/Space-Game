@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 
 public abstract class Sprite {
     private Image image;
-    protected int width, height;
+    private int width, height;
     protected int x, y;
     protected double xVel, yVel;
 

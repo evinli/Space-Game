@@ -15,11 +15,14 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private final int shipSpeed = 6;
     private final int maxCooldown = 10;
     private int cooldown;
+    private int counter;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
+    private ArrayList<Bullet> enemyShots;
     private ArrayList<Obstacle> obstacles;
-    private Background backOne;
+    private ArrayList<Enemy> enemies;
+    private Background backOne, backTwo;
 
 
 
@@ -33,17 +36,25 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         this.height = height;
         gameOver = false;
         shots = new ArrayList<>();
+        enemyShots = new ArrayList<>();
 
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
+        enemies = new ArrayList<>();
         backOne = new Background(0);
-//        backTwo = new Background(backOne.getWidth());
+        backTwo = new Background(-1 * backOne.getWidth());
         timer = new Timer(10, this);
-        timer.start();
         cooldown = 0;
+        counter = 0;
 
         Obstacle testObstacle = new Obstacle("res/Planet.png", 1000, 500);
         obstacles.add(testObstacle);
+
+        Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
+        enemies.add(testEnemy);
+        obstacles.add(testEnemy);
+
+        timer.start();
     }
 
     @Override
@@ -52,6 +63,8 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             //placeholder game over
             System.out.println("Game Over");
         }
+
+        counter++;
 
         spaceShip.setX(spaceShip.getX() + screenVel);
 
@@ -69,6 +82,10 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             spaceShip.setX(spaceShip.getX() + shipSpeed);
         }
 
+        //update background
+        backOne.update(width, getScreenOffset());
+        backTwo.update(width, getScreenOffset());
+
         //Check if the ship should shoot
         if (keys[KeyEvent.VK_SPACE]) {
             if (cooldown <= 0) {
@@ -79,16 +96,37 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         cooldown -= 1;
 
+        if (counter % 20 == 0) {
+            for (Enemy enemy : enemies) {
+                //enemies only shoot if they are on the screen and if they are in front of the spaceshipa
+                if (enemy.getX() - getScreenOffset() <= width && enemy.getX() > spaceShip.getX() + spaceShip.getWidth()) {
+                    //shoot a shot aimed at the front tip of the spaceship
+                    enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
+                            spaceShip.getY() + spaceShip.getHeight() / 2));
+                }
+            }
+        }
+
         //move each shot on the board
         ArrayList<Bullet> outOfBounds = new ArrayList<>();
         for (Bullet shot : shots) {
             shot.move();
             //remove the shot if it moves out of bounds
-            if (shot.getX() - getScreenOffset() > 1000) {
+            if (shot.getX() - getScreenOffset() > width) {
                 outOfBounds.add(shot);
             }
         }
         shots.removeAll(outOfBounds);
+
+        outOfBounds.clear();
+        for (Bullet shot : enemyShots) {
+            shot.move();
+            //remove the shot if it moves out of bounds
+            if (shot.getX() - getScreenOffset() > width || shot.getX() - getScreenOffset() < 0) {
+                outOfBounds.add(shot);
+            }
+        }
+        enemyShots.removeAll(outOfBounds);
 
         checkCollisions();
 
@@ -113,6 +151,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                 }
             }
         }
+        enemies.removeAll(toDelete);
         obstacles.removeAll(toDelete);
     }
     
@@ -127,7 +166,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         Graphics2D g2d = (Graphics2D) g;
 
         backOne.draw(g2d, this, getScreenOffset());
-//        backTwo.draw(g2d, this, getScreenOffset());
+        backTwo.draw(g2d, this, getScreenOffset());
 
         spaceShip.draw(g2d, this, getScreenOffset());
 
@@ -135,9 +174,17 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             shot.draw(g2d, this, getScreenOffset());
         }
 
+        for (Bullet shot : enemyShots) {
+            shot.draw(g2d, this, getScreenOffset());
+        }
+
         for (Obstacle o : obstacles) {
             o.draw(g2d, this, getScreenOffset());
         }
+
+        /*for (Enemy e : enemies) {
+            e.draw(g2d, this, getScreenOffset());
+        }*/
 
 
 

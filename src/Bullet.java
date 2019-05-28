@@ -11,13 +11,13 @@ public class Bullet extends Sprite {
     //This constructor is used by enemies to point at the player
     public Bullet(String imageFile, int x, int y, int xTarget, int yTarget) {
         super(imageFile, x, y);
-        double xDiff = Math.abs(xTarget - x);
-        double yDiff = Math.abs(yTarget - y);
+        double xDiff = xTarget - x;
+        double yDiff = yTarget - y;
 
         //points at the target by using similar triangles and essentially sets the speed of the hypotenuse to 10
         double angle = Math.atan(yDiff/xDiff);
-        xVel = bulletSpeed * Math.cos(angle);
-        yVel = bulletSpeed * Math.sin(angle);
+        xVel = -1 * bulletSpeed * Math.cos(angle);
+        yVel = -1 * bulletSpeed * Math.sin(angle);
     }
 
     public void move(){
