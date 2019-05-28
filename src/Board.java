@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
-public class Board extends JPanel implements ActionListener, KeyListener {
+public class Board extends JPanel implements ActionListener, KeyListener, MouseListener {
     private Timer timer;
     private boolean gameOver;
     private int width, height;
@@ -26,6 +26,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public Board(int width, int height) {
         this.addKeyListener(this);
         this.setFocusable(true);
+
+        addMouseListener(this);
 
         this.width = width;
         this.height = height;
@@ -156,4 +158,28 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
     }
+
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        System.out.println("asdfasdf");
+        int x = event.getX();
+        int y = event.getY();
+
+        obstacles.add(new Obstacle("res/Planet.png", x + getScreenOffset(), y));
+    }
+
+    @Override
+    public void mousePressed(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent event) { }
+
+    @Override
+    public void mouseEntered(MouseEvent event) { }
+
+    @Override
+    public void mouseExited(MouseEvent event) { }
+
 }
