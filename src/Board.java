@@ -14,8 +14,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private final int screenVel = 2;
     private final int shipSpeed = 6;
     private final int maxCooldown = 20;
-    private int cooldown;
-    private int counter;
+    private int cooldown, counter, obstacleMarker = 0;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
@@ -52,6 +51,8 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
         enemies.add(testEnemy);
+
+        spawnObstacles();
 
         timer.start();
     }
@@ -106,6 +107,14 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             }
         }
 
+        //spawn obstacles
+        if (getScreenOffset() > obstacleMarker + 750) {
+            obstacleMarker = getScreenOffset();
+            for (int i = 0; i < 3; i++) {
+                spawnObstacles();
+            }
+        }
+
         //move each shot on the board
         ArrayList<Bullet> outOfBounds = new ArrayList<>();
         for (Bullet shot : shots) {
@@ -128,11 +137,12 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         enemyShots.removeAll(outOfBounds);
 
         checkCollisions();
+        checkOutofBounds();
 
         this.repaint();
     }
 
-    public void checkCollisions() {
+    private void checkCollisions() {
         Rectangle shipHitBox = spaceShip.getBounds();
         for (Obstacle obstacle : obstacles) {
             if (shipHitBox.intersects(obstacle.getBounds())) {
@@ -158,9 +168,35 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         }
         enemies.removeAll(toDelete);
     }
+
+    private void checkOutofBounds() {
+        ArrayList<Obstacle> outOfBounds = new ArrayList<>();
+
+        for (Obstacle o : obstacles) {
+            if (o.getX() - getScreenOffset() + o.getWidth() < 0) {
+                outOfBounds.add(o);
+            }
+        }
+        obstacles.removeAll(outOfBounds);
+    }
     
     private int getScreenOffset() {
         return spaceShip.getX() - 300;
+    }
+
+    private void spawnObstacles() {
+        Obstacle obstacle = new Obstacle("res/Planet.png", getScreenOffset() + width +
+                (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
+        while (true) {
+            for (Obstacle o : obstacles) {
+                if (obstacle.getBounds().intersects(o.getBounds())) {
+                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+                    obstacle.setY((int)(Math.random() * (height - 200)));
+                }
+            }
+            break;
+        }
+        obstacles.add(obstacle);
     }
 
     @Override
