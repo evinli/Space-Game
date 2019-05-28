@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class Spaceship extends Sprite {
 
     Spaceship(int x, int y) {
@@ -14,4 +16,7 @@ public class Spaceship extends Sprite {
         return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2);
     }
 
+    public Rectangle getBounds() {
+        return new Rectangle(x + 5, y + 20, getWidth() - 10, getHeight() - 40);
+    }
 }
