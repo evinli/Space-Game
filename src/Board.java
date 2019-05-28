@@ -13,7 +13,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
     private final int screenVel = 2;
     private final int shipSpeed = 6;
-    private final int maxCooldown = 10;
+    private final int maxCooldown = 20;
     private int cooldown;
     private int counter;
 
