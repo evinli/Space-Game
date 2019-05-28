@@ -52,7 +52,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
         enemies.add(testEnemy);
-        obstacles.add(testEnemy);
 
         timer.start();
     }
@@ -141,18 +140,23 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             }
         }
 
-        ArrayList<Obstacle> toDelete = new ArrayList<>();
+        for (Bullet b : enemyShots) {
+            if (shipHitBox.intersects(b.getBounds())) {
+                gameOver = true;
+            }
+        }
+
+        ArrayList<Enemy> toDelete = new ArrayList<>();
         for (Bullet shot : shots) {
             Rectangle shotHitBox = shot.getBounds();
 
-            for (Obstacle obstacle : obstacles) {
-                if (shotHitBox.intersects(obstacle.getBounds())) {
-                    toDelete.add(obstacle);
+            for (Enemy e: enemies) {
+                if (shotHitBox.intersects(e.getBounds())) {
+                    toDelete.add(e);
                 }
             }
         }
         enemies.removeAll(toDelete);
-        obstacles.removeAll(toDelete);
     }
     
     private int getScreenOffset() {
@@ -182,9 +186,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             o.draw(g2d, this, getScreenOffset());
         }
 
-        /*for (Enemy e : enemies) {
+        for (Enemy e : enemies) {
             e.draw(g2d, this, getScreenOffset());
-        }*/
+        }
 
 
 
