@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -185,7 +186,10 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnObstacles() {
-        Obstacle obstacle = new Obstacle("res/Planet.png", getScreenOffset() + width +
+        String[] sprites = {"res/Planet.png", "res/Earth.png"};
+        Random r=new Random();
+
+        Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
 
 
