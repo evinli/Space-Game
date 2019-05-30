@@ -187,15 +187,20 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private void spawnObstacles() {
         Obstacle obstacle = new Obstacle("res/Planet.png", getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
-        while (true) {
+
+
+
+        boolean overlap;
+        do {
+            overlap = false;
             for (Obstacle o : obstacles) {
                 if (obstacle.getBounds().intersects(o.getBounds())) {
                     obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
                     obstacle.setY((int)(Math.random() * (height - 200)));
+                    overlap = true;
                 }
             }
-            break;
-        }
+        } while (overlap);
         obstacles.add(obstacle);
     }
 
