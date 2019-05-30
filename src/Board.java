@@ -14,7 +14,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private final int screenVel = 2;
     private final int shipSpeed = 6;
     private final int maxCooldown = 20;
-    private int cooldown, counter, obstacleMarker = 0;
+    private int cooldown, counter, obstacleMarker = 0, enemyMarker = 0;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
@@ -111,7 +111,12 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         if (getScreenOffset() > obstacleMarker + 750) {
             obstacleMarker = getScreenOffset();
             for (int i = 0; i < 3; i++) {
-                spawnObstacles();
+                //one in 5 chance to spawn an enemy instead of an obstacle
+                if (Math.random() < .2) {
+                    spawnEnemy();
+                } else {
+                    spawnObstacles();
+                }
             }
         }
 
@@ -188,8 +193,20 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         Obstacle obstacle = new Obstacle("res/Planet.png", getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
 
+        checkOverlap(obstacle);
+        obstacles.add(obstacle);
+    }
 
+    private void spawnEnemy() {
+        Enemy enemy = new Enemy("res/Earth.png", getScreenOffset() + width + (int)(Math.random() * 500),
+                (int)(Math.random() * (height - 200)));
 
+        checkOverlap(enemy);
+        enemies.add(enemy);
+    }
+
+    private void checkOverlap(Obstacle obstacle) {
+        //reposition the obstacle if it overlaps other obstacles
         boolean overlap;
         do {
             overlap = false;
@@ -200,8 +217,14 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                     overlap = true;
                 }
             }
+            for (Enemy e : enemies) {
+                if (obstacle.getBounds().intersects(e.getBounds())) {
+                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+                    obstacle.setY((int)(Math.random() * (height - 200)));
+                    overlap = true;
+                }
+            }
         } while (overlap);
-        obstacles.add(obstacle);
     }
 
     @Override
@@ -230,8 +253,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         for (Enemy e : enemies) {
             e.draw(g2d, this, getScreenOffset());
         }
-
-
 
         Toolkit.getDefaultToolkit().sync();
     }

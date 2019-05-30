@@ -16,6 +16,7 @@ public class Spaceship extends Sprite {
         return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2);
     }
 
+    @Override
     public Rectangle getBounds() {
         return new Rectangle(x + 5, y + 20, getWidth() - 10, getHeight() - 40);
     }
