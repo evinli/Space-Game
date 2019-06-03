@@ -1,4 +1,4 @@
-import javafx.scene.shape.Circle;
+import java.awt.*;
 
 public class Obstacle extends Sprite {
 
@@ -8,8 +8,8 @@ public class Obstacle extends Sprite {
 
     public void move() { }
 
-    /*@Override
-    public Circle getBounds() {
-        return new Circle(x + getWidth() / 2, y + getHeight() / 2,getWidth() / 2 - 10);
-    }*/
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(x + 10, y + 10, getWidth() - 20, getHeight() - 20);
+    }
 }

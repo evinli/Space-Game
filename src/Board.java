@@ -15,7 +15,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private final int screenVel = 0;
     private final int shipSpeed = 6;
     private final int maxCooldown = 20;
-    private int cooldown, counter, obstacleMarker = 0, enemyMarker = 0;
+    private int cooldown, counter, obstacleMarker = 0;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
