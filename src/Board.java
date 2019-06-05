@@ -122,25 +122,37 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         }
 
         //move each shot on the board
-        ArrayList<Bullet> outOfBounds = new ArrayList<>();
+        ArrayList<Bullet> toDelete = new ArrayList<>();
         for (Bullet shot : shots) {
             shot.move();
             //remove the shot if it moves out of bounds
             if (shot.getX() - getScreenOffset() > width) {
-                outOfBounds.add(shot);
+                toDelete.add(shot);
+            }
+            //remove the shot if it hits an obstacle
+            for (Obstacle o : obstacles) {
+                if (shot.getBounds().intersects(o.getBounds())) {
+                    toDelete.add(shot);
+                }
             }
         }
-        shots.removeAll(outOfBounds);
+        shots.removeAll(toDelete);
 
-        outOfBounds.clear();
+        toDelete.clear();
         for (Bullet shot : enemyShots) {
             shot.move();
             //remove the shot if it moves out of bounds
             if (shot.getX() - getScreenOffset() > width || shot.getX() - getScreenOffset() < 0) {
-                outOfBounds.add(shot);
+                toDelete.add(shot);
+            }
+            //remove the shot if it hits an obstacle
+            for (Obstacle o : obstacles) {
+                if (shot.getBounds().intersects(o.getBounds())) {
+                    toDelete.add(shot);
+                }
             }
         }
-        enemyShots.removeAll(outOfBounds);
+        enemyShots.removeAll(toDelete);
 
         checkCollisions();
         checkOutofBounds();
