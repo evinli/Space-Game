@@ -12,7 +12,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int screenVel = 0;
+    private final int screenVel = 2;
     private final int shipSpeed = 6;
     private final int maxCooldown = 20;
     private int cooldown, counter, obstacleMarker = 0;
@@ -22,6 +22,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Bullet> enemyShots;
     private ArrayList<Obstacle> obstacles;
     private ArrayList<Enemy> enemies;
+    private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
 
 
@@ -41,17 +42,12 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
+        mEnemies = new ArrayList<>();
         backOne = new Background(0);
         backTwo = new Background(-1 * backOne.getWidth());
         timer = new Timer(10, this);
         cooldown = 0;
         counter = 0;
-
-        Obstacle testObstacle = new Obstacle("res/Planet.png", 1000, 500);
-        obstacles.add(testObstacle);
-
-        Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
-        enemies.add(testEnemy);
 
         spawnObstacles();
 
@@ -59,7 +55,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent actionEvent) {
         if (gameOver) {
             //placeholder game over
             System.out.println("Game Over");
@@ -67,21 +63,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         counter++;
 
-        spaceShip.setX(spaceShip.getX() + screenVel);
-
-        //Movement of the ship
-        if (keys[KeyEvent.VK_W]) {
-            spaceShip.setY(spaceShip.getY() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_S]) {
-            spaceShip.setY(spaceShip.getY() + shipSpeed);
-        }
-        if (keys[KeyEvent.VK_A]) {
-            spaceShip.setX(spaceShip.getX() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_D]) {
-            spaceShip.setX(spaceShip.getX() + shipSpeed);
-        }
+        moveShip();
 
         //update background
         backOne.update(width, getScreenOffset());
@@ -97,9 +79,18 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         cooldown -= 1;
 
+        //Check if enemies should shoot
         if (counter % 20 == 0) {
             for (Enemy enemy : enemies) {
-                //enemies only shoot if they are on the screen and if they are in front of the spaceshipa
+                //enemies only shoot if they are on the screen and if they are in front of the spaceship
+                if (enemy.getX() - getScreenOffset() <= width && enemy.getX() > spaceShip.getX() + spaceShip.getWidth()) {
+                    //shoot a shot aimed at the front tip of the spaceship
+                    enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
+                            spaceShip.getY() + spaceShip.getHeight() / 2));
+                }
+            }
+            for (MovingEnemy enemy : mEnemies) {
+                //enemies only shoot if they are on the screen and if they are in front of the spaceship
                 if (enemy.getX() - getScreenOffset() <= width && enemy.getX() > spaceShip.getX() + spaceShip.getWidth()) {
                     //shoot a shot aimed at the front tip of the spaceship
                     enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
@@ -111,17 +102,31 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         //spawn obstacles
         if (getScreenOffset() > obstacleMarker + 750) {
             obstacleMarker = getScreenOffset();
-            for (int i = 0; i < 3; i++) {
-                //one in 5 chance to spawn an enemy instead of an obstacle
-                if (Math.random() < .2) {
-                    spawnEnemy();
-                } else {
-                    spawnObstacles();
+            if (Math.random() < .1) {//one in 10 chance to spawn moving obstacle
+                spawnMovingObstacle();
+            } else {//otherwise spawn a mix of 5 obstacles/enemies
+                for (int i = 0; i < 3; i++) {
+                    //one in 5 chance to spawn an enemy instead of an obstacle
+                    if (Math.random() < .2) {
+                        spawnEnemy();
+                    } else {
+                        spawnObstacles();
+                    }
                 }
             }
         }
 
-        //move each shot on the board
+        //Move moving obstacles
+        for (MovingEnemy e : mEnemies) {
+            if (e.getY() < 0) {
+                e.changeDirection();
+            } else if (e.getY() > height - e.getHeight()) {
+                e.changeDirection();
+            }
+            e.move();
+        }
+
+        //Move each shot on the board
         ArrayList<Bullet> toDelete = new ArrayList<>();
         for (Bullet shot : shots) {
             shot.move();
@@ -135,10 +140,17 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                     toDelete.add(shot);
                 }
             }
+            //remove the shot if it hits a moving enemy
+            for (MovingEnemy e : mEnemies) {
+                if (shot.getBounds().intersects(e.getBounds())) {
+                    toDelete.add(shot);
+                }
+            }
         }
         shots.removeAll(toDelete);
 
         toDelete.clear();
+
         for (Bullet shot : enemyShots) {
             shot.move();
             //remove the shot if it moves out of bounds
@@ -151,6 +163,11 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                     toDelete.add(shot);
                 }
             }
+            for (MovingEnemy e : mEnemies) {
+                if (shot.getBounds().intersects(e.getBounds())) {
+                    toDelete.add(shot);
+                }
+            }
         }
         enemyShots.removeAll(toDelete);
 
@@ -160,10 +177,38 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         this.repaint();
     }
 
+    public void moveShip() {
+        spaceShip.setX(spaceShip.getX() + screenVel);
+
+        //Movement of the ship
+        if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
+            spaceShip.setY(spaceShip.getY() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_S] && spaceShip.getY() < height - spaceShip.getHeight()) {
+            spaceShip.setY(spaceShip.getY() + shipSpeed);
+        }
+        if (keys[KeyEvent.VK_A]) {
+            spaceShip.setX(spaceShip.getX() - shipSpeed);
+        }
+        if (keys[KeyEvent.VK_D]) {
+            spaceShip.setX(spaceShip.getX() + shipSpeed);
+        }
+    }
+
     private void checkCollisions() {
         Rectangle shipHitBox = spaceShip.getBounds();
         for (Obstacle obstacle : obstacles) {
             if (shipHitBox.intersects(obstacle.getBounds())) {
+                gameOver = true;
+            }
+        }
+        for (Enemy e : enemies) {
+            if (shipHitBox.intersects(e.getBounds())) {
+                gameOver = true;
+            }
+        }
+        for (MovingEnemy enemy : mEnemies) {
+            if (shipHitBox.intersects(enemy.getBounds())) {
                 gameOver = true;
             }
         }
@@ -195,7 +240,19 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                 outOfBounds.add(o);
             }
         }
+        for (Obstacle e : enemies) {
+            if (e.getX() - getScreenOffset() + e.getWidth() < 0) {
+                outOfBounds.add(e);
+            }
+        }
+        for (Obstacle e : mEnemies) {
+            if (e.getX() - getScreenOffset() + e.getWidth() < 0) {
+                outOfBounds.add(e);
+            }
+        }
         obstacles.removeAll(outOfBounds);
+        enemies.removeAll(outOfBounds);
+        mEnemies.removeAll(outOfBounds);
     }
     
     private int getScreenOffset() {
@@ -204,12 +261,15 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
     private void spawnObstacles() {
         String[] sprites = {"res/Planet.png", "res/Earth.png"};
-        Random r=new Random();
+        Random r = new Random();
 
         Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
 
-        checkOverlap(obstacle);
+        while (checkOverlap(obstacle)) {
+            obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+            obstacle.setY((int)(Math.random() * (height - 200)));
+        }
         obstacles.add(obstacle);
     }
 
@@ -217,30 +277,41 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         Enemy enemy = new Enemy("res/Earth.png", getScreenOffset() + width + (int)(Math.random() * 500),
                 (int)(Math.random() * (height - 200)));
 
-        checkOverlap(enemy);
+        while (checkOverlap(enemy)) {
+            enemy.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+            enemy.setY((int)(Math.random() * (height - 200)));
+        }
         enemies.add(enemy);
     }
 
-    private void checkOverlap(Obstacle obstacle) {
+    private void spawnMovingObstacle() {
+        MovingEnemy mObstacle = new MovingEnemy("res/Planet.png", getScreenOffset() + width +
+                (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
+        while (checkOverlap(mObstacle)) {
+            mObstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+            mObstacle.setY((int)(Math.random() * (height - 200)));
+        }
+        mEnemies.add(mObstacle);
+    }
+
+    private boolean checkOverlap(Obstacle obstacle) {
         //reposition the obstacle if it overlaps other obstacles
-        boolean overlap;
-        do {
-            overlap = false;
-            for (Obstacle o : obstacles) {
-                if (obstacle.getBounds().intersects(o.getBounds())) {
-                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
-                    obstacle.setY((int)(Math.random() * (height - 200)));
-                    overlap = true;
-                }
+        for (Obstacle o : obstacles) {
+            if (obstacle.getBounds().intersects(o.getBounds())) {
+                return true;
             }
-            for (Enemy e : enemies) {
-                if (obstacle.getBounds().intersects(e.getBounds())) {
-                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
-                    obstacle.setY((int)(Math.random() * (height - 200)));
-                    overlap = true;
-                }
+        }
+        for (Enemy e : enemies) {
+            if (obstacle.getBounds().intersects(e.getBounds())) {
+                return true;
             }
-        } while (overlap);
+        }
+        for (MovingEnemy e : mEnemies) {
+            if (obstacle.getBounds().intersects(e.getBounds())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -267,6 +338,10 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         }
 
         for (Enemy e : enemies) {
+            e.draw(g2d, this, getScreenOffset());
+        }
+
+        for (MovingEnemy e : mEnemies) {
             e.draw(g2d, this, getScreenOffset());
         }
 

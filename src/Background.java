@@ -11,7 +11,7 @@ public class Background extends Sprite {
         //if background is off screen on the left
         if (x + getWidth() < screenOffset) {
             x += getWidth() * 2;
-        } else if (x > screenOffset + frameWidth) {//off screen on the right
+        } else if (x - screenOffset > frameWidth) {//off screen on the right
             x -= getWidth() * 2;
         }
     }
