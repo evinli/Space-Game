@@ -12,7 +12,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int screenVel = 0;
+    private final int screenVel = 2;
     private final int shipSpeed = 6;
     private final int maxCooldown = 20;
     private int cooldown, counter, obstacleMarker = 0;
@@ -203,7 +203,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnObstacles() {
-        String[] sprites = {"res/Planet.png", "res/Earth.png"};
+        String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Moon.png"};
         Random r=new Random();
 
         Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
