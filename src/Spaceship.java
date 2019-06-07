@@ -14,8 +14,8 @@ public class Spaceship extends Sprite {
 
     }
 
-    public Bullet shoot() {
-        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed);
+    public Bullet shoot(boolean right) {
+        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed, right);
     }
 
     @Override

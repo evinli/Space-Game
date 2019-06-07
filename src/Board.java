@@ -24,6 +24,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
+    private boolean shipDirection;
 
 
 
@@ -73,7 +74,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             if (keys[KeyEvent.VK_SPACE]) {
                 if (cooldown <= 0) {
                     cooldown = MAXCOOLDOWN;
-                    shots.add(spaceShip.shoot());
+                    shots.add(spaceShip.shoot(shipDirection));
                 }
             }
 
@@ -141,19 +142,26 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     public void moveShip() {
         spaceShip.setX(spaceShip.getX() + SCREENVEL);
 
+        spaceShip.loadImage("res/Spaceship.png");
+        shipDirection = true;
+
         //Movement of the ship
         if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
             spaceShip.setY(spaceShip.getY() - SHIPSPEED);
         }
+
         if (keys[KeyEvent.VK_S] && spaceShip.getY() < height - spaceShip.getHeight()) {
             spaceShip.setY(spaceShip.getY() + SHIPSPEED);
         }
+
         if (keys[KeyEvent.VK_A]) {
             spaceShip.setX(spaceShip.getX() - SHIPSPEED);
             spaceShip.loadImage("res/SpaceshipLeft.png");
+            shipDirection = false;
         }
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + SHIPSPEED);
+            spaceShip.loadImage("res/Spaceship.png");
         }
     }
 

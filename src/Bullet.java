@@ -6,6 +6,16 @@ public class Bullet extends Sprite {
         yVel = 0;
     }
 
+    public Bullet(String imageFile, int x, int y, int speed, boolean right) {
+        super(imageFile, x, y);
+        if (right)
+            xVel = speed;
+        else {
+            xVel = 0 - speed;
+        }
+        yVel = 0;
+    }
+
     //This constructor is used by enemies to point at the player
     public Bullet(String imageFile, int x, int y, int xTarget, int yTarget, int speed) {
         super(imageFile, x, y);
