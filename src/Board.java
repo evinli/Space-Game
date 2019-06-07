@@ -150,7 +150,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         }
         if (keys[KeyEvent.VK_A]) {
             spaceShip.setX(spaceShip.getX() - SHIPSPEED);
-            spaceShip.loadImage(res/SpaceshipLeft.png);
+            spaceShip.loadImage("res/SpaceshipLeft.png");
         }
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + SHIPSPEED);
