@@ -63,7 +63,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             System.out.println("Game Over");
         }
         if (!gameOver) {
-            System.out.println(enemyCounter);
             moveShip();
 
             //update background
@@ -254,7 +253,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnObstacles() {
-        String[] sprites = {"res/Planet.png", "res/Earth.png"};
+        String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Planet.png", "res/Earth.png", "res/Moon.png"};
         Random r = new Random();
 
         Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
@@ -335,6 +334,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         for (MovingEnemy e : mEnemies) {
             e.draw(g2d, this, getScreenOffset());
         }
+
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("Enemies killed: " + enemyCounter, 3, 13);
 
         Toolkit.getDefaultToolkit().sync();
     }

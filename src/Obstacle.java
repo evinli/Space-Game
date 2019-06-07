@@ -10,6 +10,6 @@ public class Obstacle extends Sprite {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x + 10, y + 10, getWidth() - 20, getHeight() - 20);
+        return new Rectangle(x + 20, y + 20, getWidth() - 40, getHeight() - 40);
     }
 }
