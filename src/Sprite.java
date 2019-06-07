@@ -16,7 +16,7 @@ public abstract class Sprite {
         height = image.getHeight(null);
     }
 
-    private void loadImage(String imageName) {
+    public void loadImage(String imageName) {
         ImageIcon i = new ImageIcon(imageName);
         image = i.getImage();
     }
