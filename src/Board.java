@@ -12,16 +12,17 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int screenVel = 2;
-    private final int shipSpeed = 6;
-    private final int maxCooldown = 20;
-    private int cooldown, counter, obstacleMarker = 0;
+    private final int SCREENVEL = 2;
+    private final int SHIPSPEED = 6;
+    private final int MAXCOOLDOWN = 20;
+    private int cooldown, obstacleMarker, enemyCounter;
 
     private Spaceship spaceShip;
     private ArrayList<Bullet> shots;
     private ArrayList<Bullet> enemyShots;
     private ArrayList<Obstacle> obstacles;
     private ArrayList<Enemy> enemies;
+    private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
 
 
@@ -41,87 +42,124 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip = new Spaceship(0, 0);
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
+        mEnemies = new ArrayList<>();
         backOne = new Background(0);
         backTwo = new Background(-1 * backOne.getWidth());
         timer = new Timer(10, this);
         cooldown = 0;
-        counter = 0;
+        obstacleMarker = 0;
+        enemyCounter = 0;
 
-        Obstacle testObstacle = new Obstacle("res/Planet.png", 1000, 500);
-        obstacles.add(testObstacle);
-
-        Enemy testEnemy = new Enemy("res/Earth.png", 1000, 100);
-        enemies.add(testEnemy);
-
+        //spawns one obstacle to begin with
         spawnObstacles();
 
         timer.start();
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent actionEvent) {
         if (gameOver) {
             //placeholder game over
             System.out.println("Game Over");
         }
+        if (!gameOver) {
+            System.out.println(enemyCounter);
+            moveShip();
 
-        counter++;
+            //update background
+            backOne.update(width, getScreenOffset());
+            backTwo.update(width, getScreenOffset());
 
-        spaceShip.setX(spaceShip.getX() + screenVel);
-
-        //Movement of the ship
-        if (keys[KeyEvent.VK_W]) {
-            spaceShip.setY(spaceShip.getY() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_S]) {
-            spaceShip.setY(spaceShip.getY() + shipSpeed);
-        }
-        if (keys[KeyEvent.VK_A]) {
-            spaceShip.setX(spaceShip.getX() - shipSpeed);
-        }
-        if (keys[KeyEvent.VK_D]) {
-            spaceShip.setX(spaceShip.getX() + shipSpeed);
-        }
-
-        //update background
-        backOne.update(width, getScreenOffset());
-        backTwo.update(width, getScreenOffset());
-
-        //Check if the ship should shoot
-        if (keys[KeyEvent.VK_SPACE]) {
-            if (cooldown <= 0) {
-                cooldown = maxCooldown;
-                shots.add(spaceShip.shoot());
+            //Check if the ship should shoot
+            if (keys[KeyEvent.VK_SPACE]) {
+                if (cooldown <= 0) {
+                    cooldown = MAXCOOLDOWN;
+                    shots.add(spaceShip.shoot());
+                }
             }
-        }
 
-        cooldown -= 1;
+            cooldown -= 1;
 
-        if (counter % 20 == 0) {
+            //Check if enemies should shoot
             for (Enemy enemy : enemies) {
-                //enemies only shoot if they are on the screen and if they are in front of the spaceshipa
-                if (enemy.getX() - getScreenOffset() <= width && enemy.getX() > spaceShip.getX() + spaceShip.getWidth()) {
+                //enemies only shoot if they are on the screen and if they are in front of the spaceship
+                if (enemy.shouldShoot(getScreenOffset(), width, spaceShip)) {
                     //shoot a shot aimed at the front tip of the spaceship
                     enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
                             spaceShip.getY() + spaceShip.getHeight() / 2));
                 }
             }
-        }
-
-        //spawn obstacles
-        if (getScreenOffset() > obstacleMarker + 750) {
-            obstacleMarker = getScreenOffset();
-            for (int i = 0; i < 3; i++) {
-                //one in 5 chance to spawn an enemy instead of an obstacle
-                if (Math.random() < .2) {
-                    spawnEnemy();
-                } else {
-                    spawnObstacles();
+            for (MovingEnemy enemy : mEnemies) {
+                //enemies only shoot if they are on the screen and if they are in front of the spaceship
+                if (enemy.shouldShoot(getScreenOffset(), width, spaceShip)) {
+                    //shoot a shot aimed at the front tip of the spaceship
+                    enemyShots.add(enemy.shoot(spaceShip.getX() + spaceShip.getWidth(),
+                            spaceShip.getY() + spaceShip.getHeight() / 2));
                 }
             }
+
+            //spawn obstacles once every time the screen pans 750 to the right
+            if (getScreenOffset() > obstacleMarker + 750) {
+                obstacleMarker = getScreenOffset();
+                if (Math.random() < .1) {//one in 10 chance to spawn moving obstacle
+                    spawnMovingObstacle();
+                } else {//otherwise spawn a mix of 5 obstacles/enemies
+                    for (int i = 0; i < 3; i++) {
+                        //one in 5 chance to spawn an enemy instead of an obstacle
+                        if (Math.random() < .2) {
+                            spawnEnemy();
+                        } else {
+                            spawnObstacles();
+                        }
+                    }
+                }
+            }
+
+            //Move the moving obstacles
+            for (MovingEnemy e : mEnemies) {
+                if (e.getY() < 0) {
+                    e.changeDirection();
+                } else if (e.getY() > height - e.getHeight()) {
+                    e.changeDirection();
+                }
+                e.move();
+            }
+
+            //Move each shot on the board
+            moveShots(shots);
+            moveShots(enemyShots);
+
+            //check if the ship has collided with anything
+            checkShipCollisions();
+
+            //remove all obstacles, enemies, and moving enemies that are out of bounds
+            checkOutofBounds();
         }
 
-        //move each shot on the board
+        this.repaint();
+    }
+
+    public void moveShip() {
+        spaceShip.setX(spaceShip.getX() + SCREENVEL);
+
+        //Movement of the ship
+        if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
+            spaceShip.setY(spaceShip.getY() - SHIPSPEED);
+        }
+        if (keys[KeyEvent.VK_S] && spaceShip.getY() < height - spaceShip.getHeight()) {
+            spaceShip.setY(spaceShip.getY() + SHIPSPEED);
+        }
+        if (keys[KeyEvent.VK_A]) {
+            spaceShip.setX(spaceShip.getX() - SHIPSPEED);
+        }
+        if (keys[KeyEvent.VK_D]) {
+            spaceShip.setX(spaceShip.getX() + SHIPSPEED);
+        }
+    }
+
+    //Moves each shot in the inputted array of bullets. It also deletes shots that are out of bound or are colliding
+    //with obstacles or moving enemies
+    private void moveShots(ArrayList<Bullet> shots) {
         ArrayList<Bullet> toDelete = new ArrayList<>();
         for (Bullet shot : shots) {
             shot.move();
@@ -131,39 +169,37 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             }
             //remove the shot if it hits an obstacle
             for (Obstacle o : obstacles) {
-                if (shot.getBounds().intersects(o.getBounds())) {
-                    toDelete.add(shot);
-                }
+                checkBulletCollisions(shot, o, toDelete);
+            }
+            //remove the shot if it hits a moving enemy
+            for (MovingEnemy e : mEnemies) {
+                checkBulletCollisions(shot, e, toDelete);
             }
         }
         shots.removeAll(toDelete);
-
-        toDelete.clear();
-        for (Bullet shot : enemyShots) {
-            shot.move();
-            //remove the shot if it moves out of bounds
-            if (shot.getX() - getScreenOffset() > width || shot.getX() - getScreenOffset() < 0) {
-                toDelete.add(shot);
-            }
-            //remove the shot if it hits an obstacle
-            for (Obstacle o : obstacles) {
-                if (shot.getBounds().intersects(o.getBounds())) {
-                    toDelete.add(shot);
-                }
-            }
-        }
-        enemyShots.removeAll(toDelete);
-
-        checkCollisions();
-        checkOutofBounds();
-
-        this.repaint();
     }
 
-    private void checkCollisions() {
+    private void checkBulletCollisions(Bullet shot, Obstacle o, ArrayList<Bullet> toDelete) {
+        if (shot.getBounds().intersects(o.getBounds())) {
+            toDelete.add(shot);
+        }
+    }
+
+    //Checks collisions for the spaceship and its shots
+    private void checkShipCollisions() {
         Rectangle shipHitBox = spaceShip.getBounds();
         for (Obstacle obstacle : obstacles) {
             if (shipHitBox.intersects(obstacle.getBounds())) {
+                gameOver = true;
+            }
+        }
+        for (Enemy e : enemies) {
+            if (shipHitBox.intersects(e.getBounds())) {
+                gameOver = true;
+            }
+        }
+        for (MovingEnemy enemy : mEnemies) {
+            if (shipHitBox.intersects(enemy.getBounds())) {
                 gameOver = true;
             }
         }
@@ -181,21 +217,35 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             for (Enemy e: enemies) {
                 if (shotHitBox.intersects(e.getBounds())) {
                     toDelete.add(e);
+                    enemyCounter++;
                 }
             }
         }
         enemies.removeAll(toDelete);
     }
 
+    //removes all obstacles, enemies, and moving enemies that are too far out of bounds to the left
     private void checkOutofBounds() {
         ArrayList<Obstacle> outOfBounds = new ArrayList<>();
 
         for (Obstacle o : obstacles) {
-            if (o.getX() - getScreenOffset() + o.getWidth() < 0) {
+            if (o.getX() - getScreenOffset() + o.getWidth() < -300) {
                 outOfBounds.add(o);
             }
         }
+        for (Obstacle e : enemies) {
+            if (e.getX() - getScreenOffset() + e.getWidth() < -300) {
+                outOfBounds.add(e);
+            }
+        }
+        for (Obstacle e : mEnemies) {
+            if (e.getX() - getScreenOffset() + e.getWidth() < -300) {
+                outOfBounds.add(e);
+            }
+        }
         obstacles.removeAll(outOfBounds);
+        enemies.removeAll(outOfBounds);
+        mEnemies.removeAll(outOfBounds);
     }
     
     private int getScreenOffset() {
@@ -203,13 +253,13 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnObstacles() {
-        String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Moon.png"};
-        Random r=new Random();
+        String[] sprites = {"res/Planet.png", "res/Earth.png"};
+        Random r = new Random();
 
         Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
 
-        checkOverlap(obstacle);
+        respawnIfOverlap(obstacle);
         obstacles.add(obstacle);
     }
 
@@ -217,30 +267,41 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         Enemy enemy = new Enemy("res/Earth.png", getScreenOffset() + width + (int)(Math.random() * 500),
                 (int)(Math.random() * (height - 200)));
 
-        checkOverlap(enemy);
+        respawnIfOverlap(enemy);
         enemies.add(enemy);
     }
 
-    private void checkOverlap(Obstacle obstacle) {
-        //reposition the obstacle if it overlaps other obstacles
-        boolean overlap;
-        do {
-            overlap = false;
-            for (Obstacle o : obstacles) {
-                if (obstacle.getBounds().intersects(o.getBounds())) {
-                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
-                    obstacle.setY((int)(Math.random() * (height - 200)));
-                    overlap = true;
-                }
+    private void spawnMovingObstacle() {
+        MovingEnemy mObstacle = new MovingEnemy("res/Planet.png", getScreenOffset() + width +
+                (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
+        respawnIfOverlap(mObstacle);
+        mEnemies.add(mObstacle);
+    }
+
+    private void respawnIfOverlap(Obstacle obstacle) {
+        while (checkOverlap(obstacle)) {
+            obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
+            obstacle.setY((int)(Math.random() * (height - 200)));
+        }
+    }
+
+    private boolean checkOverlap(Obstacle obstacle) {
+        for (Obstacle o : obstacles) {
+            if (obstacle.getBounds().intersects(o.getBounds())) {
+                return true;
             }
-            for (Enemy e : enemies) {
-                if (obstacle.getBounds().intersects(e.getBounds())) {
-                    obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
-                    obstacle.setY((int)(Math.random() * (height - 200)));
-                    overlap = true;
-                }
+        }
+        for (Enemy e : enemies) {
+            if (obstacle.getBounds().intersects(e.getBounds())) {
+                return true;
             }
-        } while (overlap);
+        }
+        for (MovingEnemy e : mEnemies) {
+            if (obstacle.getBounds().intersects(e.getBounds())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -267,6 +328,10 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         }
 
         for (Enemy e : enemies) {
+            e.draw(g2d, this, getScreenOffset());
+        }
+
+        for (MovingEnemy e : mEnemies) {
             e.draw(g2d, this, getScreenOffset());
         }
 
