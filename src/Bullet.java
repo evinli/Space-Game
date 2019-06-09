@@ -6,12 +6,14 @@ public class Bullet extends Sprite {
         yVel = 0;
     }
 
-    public Bullet(String imageFile, int x, int y, int speed, boolean right) {
+    public Bullet(String imageFile, int x, int y, int speed, boolean direction) {
         super(imageFile, x, y);
-        if (right)
+        if (direction) {
             xVel = speed;
+        }
+        // speed of bullet assumes negative velocity when spaceship is facing left
         else {
-            xVel = 0 - speed;
+            xVel = 0;
         }
         yVel = 0;
     }

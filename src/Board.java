@@ -72,7 +72,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
             //Check if the ship should shoot
             if (keys[KeyEvent.VK_SPACE]) {
-                if (cooldown <= 0) {
+                if ((cooldown <= 0) && (shipDirection)) {
                     cooldown = MAXCOOLDOWN;
                     shots.add(spaceShip.shoot(shipDirection));
                 }
@@ -332,7 +332,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip.draw(g2d, this, getScreenOffset());
 
         for (Bullet shot : shots) {
-            shot.draw(g2d, this, getScreenOffset());
+            if (shipDirection = true) {
+                shot.draw(g2d, this, getScreenOffset());
+            }
         }
 
         for (Bullet shot : enemyShots) {
