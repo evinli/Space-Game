@@ -288,7 +288,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         //moving obstacles spawn with moons
         for (int i = 0; i < 5; i++) {
             Obstacle obstacle = new Obstacle("res/Moon.png", mObstacle.getX() + (int)(Math.random() * 300)
-                    + 200, (int)(Math.random() * (height - 200)));
+                    + 200, (int)(Math.random() * (height - 75)));
             respawnIfOverlap(obstacle);
             obstacles.add(obstacle);
         }
