@@ -12,7 +12,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int SCREENVEL = 2;
+    private final int SCREENVEL = 0;
     private final int SHIPSPEED = 6;
     private final int MAXCOOLDOWN = 20;
     private int cooldown, obstacleMarker, enemyCounter;
@@ -24,7 +24,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
-
 
 
     public Board(int width, int height) {
@@ -309,8 +308,8 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         Graphics2D g2d = (Graphics2D) g;
 
-        backOne.draw(g2d, this, getScreenOffset());
-        backTwo.draw(g2d, this, getScreenOffset());
+        backOne.draw(g2d, this, ( (getScreenOffset() % 1950) - 1000));
+        backOne.draw(g2d, this, ( ((getScreenOffset() - 975) % 1950)) - 1000);
 
         spaceShip.draw(g2d, this, getScreenOffset());
 
