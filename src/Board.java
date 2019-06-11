@@ -24,6 +24,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
+    private boolean shipDirection;
 
 
     public Board(int width, int height) {
@@ -70,9 +71,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
             //Check if the ship should shoot
             if (keys[KeyEvent.VK_SPACE]) {
-                if (cooldown <= 0) {
+                if ((cooldown <= 0) && (shipDirection)) {
                     cooldown = MAXCOOLDOWN;
-                    shots.add(spaceShip.shoot());
+                    shots.add(spaceShip.shoot(shipDirection));
                 }
             }
 
@@ -140,18 +141,26 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     public void moveShip() {
         spaceShip.setX(spaceShip.getX() + SCREENVEL);
 
+        spaceShip.loadImage("res/Spaceship.png");
+        shipDirection = true;
+
         //Movement of the ship
         if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
             spaceShip.setY(spaceShip.getY() - SHIPSPEED);
         }
+
         if (keys[KeyEvent.VK_S] && spaceShip.getY() < height - spaceShip.getHeight()) {
             spaceShip.setY(spaceShip.getY() + SHIPSPEED);
         }
+
         if (keys[KeyEvent.VK_A]) {
             spaceShip.setX(spaceShip.getX() - SHIPSPEED);
+            spaceShip.loadImage("res/SpaceshipLeft.png");
+            shipDirection = false;
         }
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + SHIPSPEED);
+            spaceShip.loadImage("res/Spaceship.png");
         }
     }
 
@@ -274,6 +283,14 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
         respawnIfOverlap(mObstacle);
         mEnemies.add(mObstacle);
+
+        //moving obstacles spawn with moons
+        for (int i = 0; i < 5; i++) {
+            Obstacle obstacle = new Obstacle("res/Moon.png", mObstacle.getX() + (int)(Math.random() * 300)
+                    + 200, (int)(Math.random() * (height - 75)));
+            respawnIfOverlap(obstacle);
+            obstacles.add(obstacle);
+        }
     }
 
     private void respawnIfOverlap(Obstacle obstacle) {
@@ -314,7 +331,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip.draw(g2d, this, getScreenOffset());
 
         for (Bullet shot : shots) {
-            shot.draw(g2d, this, getScreenOffset());
+            if (shipDirection = true) {
+                shot.draw(g2d, this, getScreenOffset());
+            }
         }
 
         for (Bullet shot : enemyShots) {
