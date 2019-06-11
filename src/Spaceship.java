@@ -20,6 +20,6 @@ public class Spaceship extends Sprite {
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x + 10, y + 20, getWidth() - 15, getHeight() - 40);
+        return new Rectangle(x + 20, y + 30, getWidth() - 15, getHeight() - 40);
     }
 }

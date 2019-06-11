@@ -13,7 +13,7 @@ public class Bullet extends Sprite {
         }
         // speed of bullet assumes negative velocity when spaceship is facing left
         else {
-            xVel = 0;
+            xVel = 0 - speed;
         }
         yVel = 0;
     }
