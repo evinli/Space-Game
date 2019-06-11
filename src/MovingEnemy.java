@@ -1,13 +1,10 @@
-import java.util.Random;
+import java.awt.*;
 
 public class MovingEnemy extends Enemy {
 
     public MovingEnemy(String imageFile, int x, int y) {
         super(imageFile, x, y);
         yVel = 2;
-        Random r = new Random();
-        if (r.nextBoolean())
-            changeDirection();
     }
 
     public void changeDirection() {
@@ -17,5 +14,10 @@ public class MovingEnemy extends Enemy {
     @Override
     public void move() {
         y += yVel;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle(x + 20, y + 20, getWidth() - 40, getHeight() - 40);
     }
 }
