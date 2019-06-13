@@ -8,7 +8,7 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener, KeyListener, MouseListener {
     private Timer timer;
-    private boolean gameOver;
+    private boolean gameOver, gameStart;
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
@@ -37,6 +37,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         this.width = width;
         this.height = height;
         gameOver = false;
+        gameStart = false;
         shots = new ArrayList<>();
         enemyShots = new ArrayList<>();
 
@@ -53,17 +54,13 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         //spawns one obstacle to begin with
         spawnObstacles();
-
         timer.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (gameOver) {
-            //placeholder game over
-            System.out.println("Game Over");
-        }
-        if (!gameOver) {
+
+        if (!gameOver && gameStart) {
             moveShip();
 
             //update background
@@ -135,6 +132,15 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             //remove all obstacles, enemies, and moving enemies that are out of bounds
             checkOutofBounds();
         }
+        else if (gameOver) {
+            //placeholder game over
+            System.out.println("Game Over");
+        }
+        else {//if game has not yet started
+            if (keys[KeyEvent.VK_SPACE]) {
+                gameStart = true;
+            }
+        }
 
         this.repaint();
     }
@@ -150,7 +156,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             spaceShip.setY(spaceShip.getY() - SHIPSPEED);
         }
 
-        if (keys[KeyEvent.VK_S] && spaceShip.getY() < height - spaceShip.getHeight()) {
+        if (keys[KeyEvent.VK_S] && spaceShip.getY() + spaceShip.getHeight() * 1.5 < height) {
             spaceShip.setY(spaceShip.getY() + SHIPSPEED);
         }
 
@@ -261,7 +267,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnObstacles() {
-        String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Planet.png", "res/Earth.png", "res/Moon.png", "res/Moon.png"};
+        String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Planet.png", "res/Earth.png", "res/Moon.png"};
         Random r = new Random();
 
         Obstacle obstacle = new Obstacle(sprites[r.nextInt(sprites.length)], getScreenOffset() + width +
@@ -332,7 +338,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip.draw(g2d, this, getScreenOffset());
 
         for (Bullet shot : shots) {
-            if (shipDirection = true) {
+            if (shipDirection) {
                 shot.draw(g2d, this, getScreenOffset());
             }
         }
@@ -353,8 +359,14 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
             e.draw(g2d, this, getScreenOffset());
         }
 
+        g2d.setFont(new Font("Montserrat", Font.BOLD, 20));
         g2d.setColor(Color.WHITE);
-        g2d.drawString("Enemies killed: " + enemyCounter, 3, 13);
+        g2d.drawString("ENEMIES KILLED: " + enemyCounter, 3, 20);
+
+        if (!gameStart) {
+            g2d.setColor(Color.WHITE);
+            g2d.drawString("Press 'Space' to Start", 3,  50);
+        }
 
         Toolkit.getDefaultToolkit().sync();
     }
