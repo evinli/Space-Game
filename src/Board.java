@@ -280,7 +280,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     }
 
     private void spawnMovingObstacle() {
-        MovingEnemy mObstacle = new MovingEnemy("res/Planet.png", getScreenOffset() + width +
+        MovingEnemy mObstacle = new MovingEnemy("res/Mothership.png", getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
         respawnIfOverlap(mObstacle);
         mEnemies.add(mObstacle);
