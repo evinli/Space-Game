@@ -2,8 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
 
 public class Board extends JPanel implements ActionListener, KeyListener, MouseListener {
@@ -24,6 +23,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
+    private Image background;
     private boolean shipDirection;
 
 
@@ -39,7 +39,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         shots = new ArrayList<>();
         enemyShots = new ArrayList<>();
 
-        spaceShip = new Spaceship(0, 0);
+        spaceShip = new Spaceship(300, 0);
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
         mEnemies = new ArrayList<>();
@@ -49,6 +49,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         cooldown = 0;
         obstacleMarker = 0;
         enemyCounter = 0;
+
+        ImageIcon i = new ImageIcon("res/Backdrop.png");
+        background = i.getImage();
 
         //spawns one obstacle to begin with
         spawnObstacles();
@@ -325,8 +328,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
         Graphics2D g2d = (Graphics2D) g;
 
-        backOne.draw(g2d, this, ( (getScreenOffset() % 1950) - 1000));
-        backOne.draw(g2d, this, ( ((getScreenOffset() - 975) % 1950)) - 1000);
+        g.drawImage(background, (970 - (getScreenOffset() % 2000)), 0, this);
+        g.drawImage(background, (970 - ((1000 + getScreenOffset()) % 2000)), 0, this);
+
 
         spaceShip.draw(g2d, this, getScreenOffset());
 
