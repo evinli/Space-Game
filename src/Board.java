@@ -11,7 +11,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private int width, height;
     private boolean[] keys = new boolean[0xE3];
 
-    private final int SCREENVEL = 0;
+    private final int SCREENVEL = 2;
     private final int SHIPSPEED = 6;
     private final int MAXCOOLDOWN = 20;
     private int cooldown, obstacleMarker, enemyCounter;
