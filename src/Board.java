@@ -65,15 +65,11 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         if (!gameOver && gameStart) {
             moveShip();
 
-            //update background
-            backOne.update(width, getScreenOffset());
-            backTwo.update(width, getScreenOffset());
-
             //Check if the ship should shoot
             if (keys[KeyEvent.VK_SPACE]) {
                 if ((cooldown <= 0) && (shipDirection)) {
                     cooldown = MAXCOOLDOWN;
-                    shots.add(spaceShip.shoot(shipDirection));
+                    shots.add(spaceShip.shoot());
                 }
             }
 
@@ -341,9 +337,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip.draw(g2d, this, getScreenOffset());
 
         for (Bullet shot : shots) {
-            if (shipDirection) {
-                shot.draw(g2d, this, getScreenOffset());
-            }
+            shot.draw(g2d, this, getScreenOffset());
         }
 
         for (Bullet shot : enemyShots) {

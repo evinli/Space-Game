@@ -14,12 +14,13 @@ public class Spaceship extends Sprite {
 
     }
 
-    public Bullet shoot(boolean right) {
-        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed, right);
+    public Bullet shoot() {
+        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed);
     }
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x + 20, y + 30, getWidth() - 15, getHeight() - 40);
+        return new Rectangle(x + 20, y + 20, getWidth() - 40,
+                getHeight() - 40);
     }
 }
