@@ -24,6 +24,9 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<MovingEnemy> mEnemies;
     private Background backOne, backTwo;
     private Image background;
+
+
+    //check if this does anything
     private boolean shipDirection;
 
 
@@ -61,7 +64,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-
         if (!gameOver && gameStart) {
             moveShip();
 
