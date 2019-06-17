@@ -143,6 +143,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         this.repaint();
     }
 
+    //This function determines how the Player's spaceship moves
     public void moveShip() {
         spaceShip.setX(spaceShip.getX() + SCREENVEL);
 
