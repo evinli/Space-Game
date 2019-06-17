@@ -360,6 +360,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         g2d.setFont(new Font("Montserrat", Font.BOLD, 20));
         g2d.setColor(Color.WHITE);
         g2d.drawString("ENEMIES KILLED: " + enemyCounter, 3, 20);
+        g2d.drawString("DISTANCE GONE: " + (spaceShip.getX() - 300), 750, 20);
 
         if (!gameStart) {
             g2d.setColor(Color.WHITE);
