@@ -15,7 +15,7 @@ public class Application extends JFrame {
         setSize(1000, 800);
         setResizable(false);
 
-        setTitle("Application");
+        setTitle("Space Race");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
