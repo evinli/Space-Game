@@ -9,8 +9,7 @@ public class Enemy extends Obstacle {
 
     //creates a new bullet from the enemy directed at the spaceship
     public Bullet shoot(int shipX, int shipY) {
-        return new Bullet("res/EnemyBullet.png", x - 10, y + getHeight() / 2, shipX, shipY, bulletSpeed);
-        //note the bullet has to spawn at x - 10 so it doesn't start intersecting moving enemies that shoot
+        return new Bullet("res/EnemyBullet.png", x, y + getHeight() / 2, shipX, shipY, bulletSpeed);
     }
 
     //determines if the enemy should shoot.

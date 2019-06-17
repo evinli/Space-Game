@@ -29,14 +29,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         this.addKeyListener(this);
         this.setFocusable(true);
 
+        //initialize variables
         this.width = width;
         this.height = height;
         gameOver = false;
         gameStart = false;
+        spaceShip = new Spaceship(300, 0);
         shots = new ArrayList<>();
         enemyShots = new ArrayList<>();
-
-        spaceShip = new Spaceship(300, 0);
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
         mEnemies = new ArrayList<>();
@@ -58,8 +58,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         if (!gameOver && gameStart) {
             moveShip();
 
-            //Check if the ship should shoot
-            if (keys[KeyEvent.VK_SPACE]) {
+            //check if the ship should shoot
+            //the ship should only shoot when space is pressed while ship is moving forward
+            if (keys[KeyEvent.VK_SPACE] && !keys[KeyEvent.VK_A]) {
                 if (cooldown <= 0) {
                     cooldown = MAXCOOLDOWN;
                     shots.add(spaceShip.shoot());
@@ -120,6 +121,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             //check if the ship has collided with anything
             checkShipCollisions();
 
+            //check if enemies have been hit
+            checkEnemyDeath();
+
             //remove all obstacles, enemies, and moving enemies that are out of bounds
             checkOutofBounds();
         }
@@ -133,16 +137,24 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             }
         }
 
+        //indirectly calls paintComponent to draw everything
         this.repaint();
     }
 
     //This function determines how the Player's spaceship moves
     public void moveShip() {
+        //the ship always moves right to scroll the screen
         spaceShip.setX(spaceShip.getX() + SCREENVEL);
 
-        spaceShip.loadImage("res/Spaceship.png");
-
         //Movement of the ship
+        if (keys[KeyEvent.VK_A]) {
+            //when moving left, switch the sprite
+            spaceShip.setX(spaceShip.getX() - SHIPSPEED);
+            spaceShip.loadImage("res/SpaceshipLeft.png");
+        } else {
+            //if ship is not moving left, switch to forward facing ship
+            spaceShip.loadImage("res/Spaceship.png");
+        }
         if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
             spaceShip.setY(spaceShip.getY() - SHIPSPEED);
         }
@@ -150,14 +162,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         if (keys[KeyEvent.VK_S] && spaceShip.getY() + spaceShip.getHeight() * 1.5 < height) {
             spaceShip.setY(spaceShip.getY() + SHIPSPEED);
         }
-
-        if (keys[KeyEvent.VK_A]) {
-            spaceShip.setX(spaceShip.getX() - SHIPSPEED);
-            spaceShip.loadImage("res/SpaceshipLeft.png");
-        }
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + SHIPSPEED);
-            spaceShip.loadImage("res/Spaceship.png");
         }
     }
 
@@ -189,7 +195,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    //Checks collisions for the spaceship and its shots
+    //Checks collisions for the spaceship
     private void checkShipCollisions() {
         Rectangle shipHitBox = spaceShip.getBounds();
         for (Obstacle obstacle : obstacles) {
@@ -213,7 +219,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 gameOver = true;
             }
         }
+    }
 
+    //Checks collision for bullets hitting enemies
+    private void checkEnemyDeath() {
         ArrayList<Enemy> toDelete = new ArrayList<>();
         for (Bullet shot : shots) {
             Rectangle shotHitBox = shot.getBounds();
