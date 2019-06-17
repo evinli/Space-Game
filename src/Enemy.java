@@ -22,9 +22,4 @@ public class Enemy extends Obstacle {
             return true;
         return false;
     }
-
-    @Override
-    public void move() {
-        super.move();
-    }
 }

@@ -21,18 +21,12 @@ public abstract class Sprite {
         image = i.getImage();
     }
 
-    public abstract void move();
-
     public void draw(Graphics2D g, ImageObserver observer, int screenOffset) {
         g.drawImage(image, x - screenOffset, y, observer);
     }
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
-    }
-
-    public Image getImage() {
-        return image;
     }
 
     public int getWidth() {
@@ -58,7 +52,4 @@ public abstract class Sprite {
     public void setY(int y) {
         this.y = y;
     }
-
-
-
 }
