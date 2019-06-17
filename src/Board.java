@@ -5,7 +5,7 @@ import java.util.Random;
 import javax.swing.*;
 
 
-public class Board extends JPanel implements ActionListener, KeyListener, MouseListener {
+public class Board extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private boolean gameOver, gameStart;
     private int width, height;
@@ -22,19 +22,12 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     private ArrayList<Obstacle> obstacles;
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
-    private Background backOne, backTwo;
     private Image background;
-
-
-    //check if this does anything
-    private boolean shipDirection;
 
 
     public Board(int width, int height) {
         this.addKeyListener(this);
         this.setFocusable(true);
-
-        addMouseListener(this);
 
         this.width = width;
         this.height = height;
@@ -47,8 +40,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         obstacles = new ArrayList<>();
         enemies = new ArrayList<>();
         mEnemies = new ArrayList<>();
-        backOne = new Background(0);
-        backTwo = new Background(-1 * backOne.getWidth());
         timer = new Timer(10, this);
         cooldown = 0;
         obstacleMarker = 0;
@@ -69,7 +60,7 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
             //Check if the ship should shoot
             if (keys[KeyEvent.VK_SPACE]) {
-                if ((cooldown <= 0) && (shipDirection)) {
+                if (cooldown <= 0) {
                     cooldown = MAXCOOLDOWN;
                     shots.add(spaceShip.shoot());
                 }
@@ -150,7 +141,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         spaceShip.setX(spaceShip.getX() + SCREENVEL);
 
         spaceShip.loadImage("res/Spaceship.png");
-        shipDirection = true;
 
         //Movement of the ship
         if (keys[KeyEvent.VK_W] && spaceShip.getY() > 0) {
@@ -164,7 +154,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
         if (keys[KeyEvent.VK_A]) {
             spaceShip.setX(spaceShip.getX() - SHIPSPEED);
             spaceShip.loadImage("res/SpaceshipLeft.png");
-            shipDirection = false;
         }
         if (keys[KeyEvent.VK_D]) {
             spaceShip.setX(spaceShip.getX() + SHIPSPEED);
@@ -374,7 +363,6 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
@@ -386,28 +374,4 @@ public class Board extends JPanel implements ActionListener, KeyListener, MouseL
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
     }
-
-    @Override
-    public void mouseClicked(MouseEvent event) {
-        System.out.println("asdfasdf");
-        int x = event.getX();
-        int y = event.getY();
-
-        obstacles.add(new Obstacle("res/Planet.png", x + getScreenOffset(), y));
-    }
-
-    @Override
-    public void mousePressed(MouseEvent event) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent event) { }
-
-    @Override
-    public void mouseEntered(MouseEvent event) { }
-
-    @Override
-    public void mouseExited(MouseEvent event) { }
-
 }

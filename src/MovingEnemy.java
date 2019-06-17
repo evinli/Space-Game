@@ -11,7 +11,6 @@ public class MovingEnemy extends Enemy {
         yVel *= -1;
     }
 
-    @Override
     public void move() {
         y += yVel;
     }
