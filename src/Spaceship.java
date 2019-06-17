@@ -12,6 +12,7 @@ public class Spaceship extends Sprite {
         return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed);
     }
 
+    //getBounds has to take a smaller rectangle than the image size to accurately outline the actual spaceship itself
     @Override
     public Rectangle getBounds() {
         return new Rectangle(x + 20, y + 20, getWidth() - 40,

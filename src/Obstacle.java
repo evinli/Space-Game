@@ -6,6 +6,7 @@ public class Obstacle extends Sprite {
         super(imageFile, x, y);
     }
 
+    //getBounds has to take a smaller rectangle than the image size to remove whitespace
     @Override
     public Rectangle getBounds() {
         return new Rectangle(x + 20, y + 20, getWidth() - 40, getHeight() - 40);

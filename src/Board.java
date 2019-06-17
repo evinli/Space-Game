@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
@@ -23,6 +25,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     private ArrayList<Enemy> enemies;
     private ArrayList<MovingEnemy> mEnemies;
     private Image background;
+    private Font megrim;
 
 
     public Board(int width, int height) {
@@ -48,9 +51,25 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         ImageIcon i = new ImageIcon("res/Backdrop.png");
         background = i.getImage();
 
+        initializeFont();
+
         //spawns one obstacle to begin with
         spawnObstacles();
         timer.start();
+    }
+
+    public void initializeFont() {
+        try {
+            //create the font to use. Specify the size!
+            megrim = Font.createFont(Font.TRUETYPE_FONT, new File("res/Megrim.ttf")).deriveFont(20f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            //register the font
+            ge.registerFont(megrim);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(FontFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -357,14 +376,17 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             e.draw(g2d, this, getScreenOffset());
         }
 
-        g2d.setFont(new Font("Montserrat", Font.BOLD, 20));
+        g2d.setFont(megrim);
         g2d.setColor(Color.WHITE);
         g2d.drawString("ENEMIES KILLED: " + enemyCounter, 3, 20);
         g2d.drawString("DISTANCE GONE: " + (spaceShip.getX() - 300), 750, 20);
 
         if (!gameStart) {
-            g2d.setColor(Color.WHITE);
-            g2d.drawString("Press 'Space' to Start", 3,  50);
+            g2d.drawString("Hold 'W', 'A', 'S', 'D' to move", 3,  620);
+            g2d.drawString("Shoot enemies with 'Space'", 3,  650);
+            g2d.drawString("Dodge obstacles and shoot enemies", 3,  680);
+            g2d.drawString("Watch out for the invincible mothership!", 3,  710);
+            g2d.drawString("Press 'Space' to Start", 3,  740);
         }
 
         Toolkit.getDefaultToolkit().sync();
