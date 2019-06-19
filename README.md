@@ -1,9 +1,9 @@
 # Space Race
 
-it's a game in space!
+It's a game in space!
 
-run with `java -classpath ".\out\production\Space-Game" Application`
+Run with `java -classpath ".\out\production\Space-Game" Application`.
 
-play with `wasd` and `space`
+Play with `wasd` and `space`.
 
 ---
