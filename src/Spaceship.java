@@ -1,5 +1,6 @@
 import java.awt.*;
 
+//This class is for the spaceship that the player controls
 public class Spaceship extends Sprite {
 
     private static final int bulletSpeed = 10;
@@ -9,7 +10,7 @@ public class Spaceship extends Sprite {
     }
 
     public Bullet shoot() {
-        return new Bullet("res/Bullet.png", x + getWidth(), y + getHeight() / 2, bulletSpeed);
+        return new Bullet("res/Bullet.png", x + getWidth() - 20, y + getHeight() / 2, bulletSpeed);
     }
 
     //getBounds has to take a smaller rectangle than the image size to accurately outline the actual spaceship itself

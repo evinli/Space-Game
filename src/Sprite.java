@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.image.ImageObserver;
 import javax.swing.ImageIcon;
 
+//This class is an abstract class for all sprites used in the game.
 public abstract class Sprite {
     private Image image;
     private int width, height;

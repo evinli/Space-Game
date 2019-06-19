@@ -1,5 +1,7 @@
+//This class is for bullets that are created by the spaceship and enemies
 public class Bullet extends Sprite {
 
+    //This constructor is used by the player. This bullet only travels horizontally
     public Bullet(String imageFile, int x, int y, int speed) {
         super(imageFile, x, y);
         xVel = speed;
@@ -22,6 +24,4 @@ public class Bullet extends Sprite {
         x += xVel;
         y += yVel;
     }
-
-
 }

@@ -1,6 +1,7 @@
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
+//This class is the runner class.
 public class Application extends JFrame {
 
     public Application() {
@@ -9,7 +10,6 @@ public class Application extends JFrame {
     }
 
     private void initUI() {
-        
         add(new Board(1000, 800));
 
         setSize(1000, 800);
@@ -21,7 +21,6 @@ public class Application extends JFrame {
     }
 
     public static void main(String[] args) {
-
         EventQueue.invokeLater(() -> {
             Application ex = new Application();
             ex.setVisible(true);
