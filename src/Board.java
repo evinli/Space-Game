@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 
-
+// This class is where the majority of the game happens. It processes the game's logic and draws images onto the screen
 public class Board extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private boolean gameOver, gameStart;
@@ -31,22 +31,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public Board(int width, int height) {
         this.addKeyListener(this);
         this.setFocusable(true);
-
-        //initialize variables
         this.width = width;
         this.height = height;
-        gameOver = false;
-        gameStart = false;
-        spaceShip = new Spaceship(300, 0);
-        shots = new ArrayList<>();
-        enemyShots = new ArrayList<>();
-        obstacles = new ArrayList<>();
-        enemies = new ArrayList<>();
-        mEnemies = new ArrayList<>();
-        timer = new Timer(10, this);
-        cooldown = 0;
-        obstacleMarker = 0;
-        enemyCounter = 0;
+
+        initializeGame();
 
         ImageIcon i = new ImageIcon("res/Backdrop.png");
         background = i.getImage();
@@ -56,6 +44,21 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         //spawns one obstacle to begin with
         spawnObstacles();
         timer.start();
+    }
+
+    public void initializeGame() {
+        gameOver = false;
+        gameStart = false;
+        spaceShip = new Spaceship(300, height / 2 - 50);
+        shots = new ArrayList<>();
+        enemyShots = new ArrayList<>();
+        obstacles = new ArrayList<>();
+        enemies = new ArrayList<>();
+        mEnemies = new ArrayList<>();
+        timer = new Timer(10, this);
+        cooldown = 0;
+        obstacleMarker = 0;
+        enemyCounter = 0;
     }
 
     public void initializeFont() {
@@ -147,8 +150,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             checkOutofBounds();
         }
         else if (gameOver) {
-            //placeholder game over
-            System.out.println("Game Over");
+            //checks if the game should restart
+            if (keys[KeyEvent.VK_R]) {
+                initializeGame();
+            }
         }
         else {//if game has not yet started
             if (keys[KeyEvent.VK_SPACE]) {
@@ -208,6 +213,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         shots.removeAll(toDelete);
     }
 
+    //checks if the input bullet is intersecting the input obstacle
     private void checkBulletCollisions(Bullet shot, Obstacle o, ArrayList<Bullet> toDelete) {
         if (shot.getBounds().intersects(o.getBounds())) {
             toDelete.add(shot);
@@ -284,7 +290,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         return spaceShip.getX() - 300;
     }
 
+    //creates an obstacle
     private void spawnObstacles() {
+        //planet and earth appear twice so they have a higher chance of spawning than the moon
         String[] sprites = {"res/Planet.png", "res/Earth.png", "res/Planet.png", "res/Earth.png", "res/Moon.png"};
         Random r = new Random();
 
@@ -295,6 +303,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         obstacles.add(obstacle);
     }
 
+    //creates an enemy
     private void spawnEnemy() {
         Enemy enemy = new Enemy("res/UFO.png", getScreenOffset() + width + (int)(Math.random() * 500),
                 (int)(Math.random() * (height - 200)));
@@ -303,6 +312,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         enemies.add(enemy);
     }
 
+    //creates a moving enemy (mothership)
     private void spawnMovingObstacle() {
         MovingEnemy mObstacle = new MovingEnemy("res/Mothership.png", getScreenOffset() + width +
                 (int)(Math.random() * 500), (int)(Math.random() * (height - 200)));
@@ -312,12 +322,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         //moving obstacles spawn with moons
         for (int i = 0; i < 5; i++) {
             Obstacle obstacle = new Obstacle("res/Moon.png", mObstacle.getX() + (int)(Math.random() * 300)
-                    + 200, (int)(Math.random() * (height - 75)));
+                    + mObstacle.getWidth(), (int)(Math.random() * (height - 75)));
             respawnIfOverlap(obstacle);
             obstacles.add(obstacle);
         }
     }
 
+    //respawns the obstacle if it is overlapping another obstacle
     private void respawnIfOverlap(Obstacle obstacle) {
         while (checkOverlap(obstacle)) {
             obstacle.setX(getScreenOffset() + width + (int)(Math.random() * 500));
@@ -325,6 +336,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    //checks collision between an input obstacle and all other obstacles
     private boolean checkOverlap(Obstacle obstacle) {
         for (Obstacle o : obstacles) {
             if (obstacle.getBounds().intersects(o.getBounds())) {
@@ -344,6 +356,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         return false;
     }
 
+    //draws all the images onto the screen
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -387,6 +400,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             g2d.drawString("Dodge obstacles and shoot enemies", 3,  680);
             g2d.drawString("Watch out for the invincible mothership!", 3,  710);
             g2d.drawString("Press 'Space' to Start", 3,  740);
+        }
+
+        if (gameOver) {
+            //rectangle is not centered on the screen because height variable does not work as intended
+            g2d.fillRect(width / 2 - 120, height / 2 - 75, 240, 75);
+            g2d.setColor(Color.BLACK);
+            g2d.drawString("GAME OVER", width / 2 - 50, height / 2 - 50);
+            g2d.drawString("Press 'r' to play again", width / 2 - 105, height / 2 - 20);
         }
 
         Toolkit.getDefaultToolkit().sync();

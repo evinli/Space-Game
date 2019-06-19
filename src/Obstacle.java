@@ -1,5 +1,6 @@
 import java.awt.*;
 
+//This class is for regular stationary planets/obstacles
 public class Obstacle extends Sprite {
 
     public Obstacle(String imageFile, int x, int y) {

@@ -1,5 +1,6 @@
 import java.awt.*;
 
+//This class is for the mothership enemy that moves vertically and shoots at the player
 public class MovingEnemy extends Enemy {
 
     public MovingEnemy(String imageFile, int x, int y) {

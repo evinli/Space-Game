@@ -1,3 +1,4 @@
+//This class is for stationary enemies that can shoot at the player
 public class Enemy extends Obstacle {
 
     private static final int bulletSpeed = 5;
